@@ -1,6 +1,7 @@
 package org.vlis.dog.manager;
 
 import org.vlis.dog.bean.WarningBean;
+import org.vlis.dog.constant.ManagerTypeEnum;
 import org.vlis.dog.factory.ItfDataConvertFactory;
 
 import java.util.List;
@@ -15,10 +16,25 @@ import java.util.Map;
 
 public abstract class AbstractManager implements ItfManager {
 
+    /**
+     * 数据转换工厂
+     */
     private ItfDataConvertFactory dataConvertFactory;
 
-    protected AbstractManager(ItfDataConvertFactory dataConvertFactory) {
+    /**
+     * 后继处理的Manager
+     */
+    private ItfManager successorManager;
+
+    /**
+     * 处理器Manager类型
+     */
+    private ManagerTypeEnum managerTypeEnum;
+
+    protected AbstractManager(ItfDataConvertFactory dataConvertFactory, ItfManager successorManager, ManagerTypeEnum managerTypeEnum) {
         this.dataConvertFactory = dataConvertFactory;
+        this.successorManager = successorManager;
+        this.managerTypeEnum = managerTypeEnum;
     }
 
     /**
@@ -29,10 +45,17 @@ public abstract class AbstractManager implements ItfManager {
      */
     @Override
     public List<WarningBean> dealWithWarningBeanList(List<WarningBean> warningBeanList) {
+
         // 整理满足数据规格
-        Map<String, List<WarningBean>> warningBeanMap = dataConvertFactory.dataConvert(warningBeanList);
+        Map<String, List<WarningBean>> warningBeanMap = dataConvertFactory.dataConvert(warningBeanList, managerTypeEnum);
         // 对应的Manager清洗数据
-        return cleanWarningBeanList(warningBeanMap);
+        List<WarningBean> nextWarningBeanList = cleanWarningBeanList(warningBeanMap);
+        if(null == successorManager || ManagerTypeEnum.DEFAULT_MANAGER.equals(managerTypeEnum) ) {
+            // 结束往后传播
+            return nextWarningBeanList;
+        }
+
+        return successorManager.dealWithWarningBeanList(nextWarningBeanList);
     }
 
     /**
@@ -41,4 +64,8 @@ public abstract class AbstractManager implements ItfManager {
      * @return 清洗后数据集合 {@code List<WarningBean> }
      */
     protected abstract List<WarningBean> cleanWarningBeanList(Map<String, List<WarningBean>> warningBeanMap);
+
+    public ManagerTypeEnum getManagerTypeEnum() {
+        return managerTypeEnum;
+    }
 }
