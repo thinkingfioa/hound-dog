@@ -15,9 +15,20 @@ import java.util.Map;
 
 public class ThirdPartyDataConvertFactory implements ItfDataConvertFactory{
 
+    private static final ThirdPartyDataConvertFactory INSTANCE = new ThirdPartyDataConvertFactory();
+
     @Override
     public Map<String, List<WarningBean> > dataConvert(List<WarningBean> warningBeanList, ManagerTypeEnum managerTypeEnum) {
         //todo::
         return null;
+    }
+
+
+    /**
+     * 返回全局唯一单例
+     * @return
+     */
+    public static ThirdPartyDataConvertFactory getInstance() {
+        return INSTANCE;
     }
 }

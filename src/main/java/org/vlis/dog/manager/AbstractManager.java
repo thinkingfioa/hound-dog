@@ -68,4 +68,15 @@ public abstract class AbstractManager implements ItfManager {
     public ManagerTypeEnum getManagerTypeEnum() {
         return managerTypeEnum;
     }
+
+    /**
+     * 返回Manager管理器的描述
+     * @return  Manager管理器的描述
+     */
+    public String getDescription() {
+        if(null == managerTypeEnum.getDescription()) {
+            return "Unknown Manager";
+        }
+        return managerTypeEnum.getDescription();
+    }
 }

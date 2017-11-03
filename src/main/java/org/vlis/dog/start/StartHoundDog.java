@@ -4,13 +4,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vlis.dog.bean.WarningBean;
 import org.vlis.dog.config.Config;
-import org.vlis.dog.facade.ApmFacade;
+import org.vlis.dog.constant.StartUpRoleEnum;
+import org.vlis.dog.facade.DistributedFacade;
 import org.vlis.dog.facade.ItfFacade;
+import org.vlis.dog.facade.ThirdPartyFacade;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 
@@ -31,7 +31,7 @@ public class StartHoundDog {
         try {
             Config.configInit();
             LOGGER.info(" Hound-Dog start....");
-            ItfFacade rootCauseAnalysisFacade = new ApmFacade();
+            ItfFacade rootCauseAnalysisFacade = getRootCauseAnalysisFacade();
             List<WarningBean> warningBeanList = new ArrayList<WarningBean>();
             long beforeWarningBeansSize = warningBeanList.size();
             List<WarningBean> rootWarningBeanList = rootCauseAnalysisFacade.startRootCauseAnalysis(warningBeanList);
@@ -43,6 +43,15 @@ public class StartHoundDog {
         } finally {
             LOGGER.info(" cost Time: {} ms", System.currentTimeMillis() - startTime);
         }
+    }
 
+    private static ItfFacade getRootCauseAnalysisFacade() {
+        if(Config.getStartUpRole().equals(StartUpRoleEnum.DISTRIBUTED_FACADE.getStartUpRoleName())) {
+            return new DistributedFacade();
+        } else if( Config.getStartUpRole().equals(StartUpRoleEnum.THIRD_PARTY_FACADE.getStartUpRoleName())) {
+            return new ThirdPartyFacade();
+        } else {
+            throw new NullPointerException("can't start Hound-dog");
+        }
     }
 }

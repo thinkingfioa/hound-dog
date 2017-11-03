@@ -13,7 +13,9 @@ import java.util.Map;
  */
 
 
-public class ApmDataConvertFactory implements ItfDataConvertFactory {
+public class DistributedDataConvertFactory implements ItfDataConvertFactory {
+
+    private static final DistributedDataConvertFactory INSTANCE = new DistributedDataConvertFactory();
 
     @Override
     public Map<String, List<WarningBean>> dataConvert(List<WarningBean> warningBeanList, ManagerTypeEnum managerTypeEnum) {
@@ -42,5 +44,11 @@ public class ApmDataConvertFactory implements ItfDataConvertFactory {
         return null;
     }
 
-
+    /**
+     * 返回全局唯一单例
+     * @return
+     */
+    public static DistributedDataConvertFactory getInstance() {
+        return INSTANCE;
+    }
 }
