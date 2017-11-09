@@ -14,28 +14,27 @@ import java.util.Map;
 /**
  * @author thinking_fioa
  * @createTime 2017/11/2
- * @description 告警信息merge模块
+ * @description
  */
 
 
-public final class CondenseManager extends AbstractManager {
+public class CondenseManager extends AbstractManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CondenseManager.class);
 
     public CondenseManager(ItfDataConvertFactory dataConvertFactory, ItfManager successorManager) {
-        super(dataConvertFactory, successorManager, ManagerTypeEnum.CONDENSE_MANAGER);
+        super(dataConvertFactory, successorManager, ManagerTypeEnum.DEREPLICATION_MANAGER);
     }
 
     /**
      *
-     * @param warningBeanMap 待处理的数据集
-     * @return
+     * @param warningBeanMap 告警数据集
+     * @return  {@code List<WarningBean> } 归一化数据集
      */
     @Override
     public List<WarningBean> cleanWarningBeanList(Map<String, List<WarningBean>> warningBeanMap) {
-        //todo:: 归并的数据处理
-        LOGGER.info("{} starting...", ManagerTypeEnum.CONDENSE_MANAGER.getDescription());
+        //todo::
+        LOGGER.info("{} starting...", ManagerTypeEnum.DEREPLICATION_MANAGER.getDescription());
         return null;
     }
-
 }

@@ -7,7 +7,7 @@ import org.vlis.dog.manager.ItfManager;
 /**
  * @author thinking_fioa
  * @createTime 2017/11/2
- * @description
+ * @description 提供第三方数据接入模块。目前为实现。
  */
 
 

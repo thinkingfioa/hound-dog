@@ -30,10 +30,10 @@ public class DistributedFacade extends AbstractCommonFacade {
         LOGGER.info(" build DistributedFacade starting....");
 
         DefaultManager endChainManager = new DefaultManager(DistributedDataConvertFactory.getInstance());
-        CondenseManager condenseManager = new CondenseManager(DistributedDataConvertFactory.getInstance(), endChainManager);
-        ReasoningManager reasoningManager = new ReasoningManager(DistributedDataConvertFactory.getInstance(), condenseManager);
+        DereplicationManager dereplicationManager = new DereplicationManager(DistributedDataConvertFactory.getInstance(), endChainManager);
+        ReasoningManager reasoningManager = new ReasoningManager(DistributedDataConvertFactory.getInstance(), dereplicationManager);
         ClassifyManager classifyManager = new ClassifyManager(DistributedDataConvertFactory.getInstance(), reasoningManager);
-        DereplicationManager dereplicationManager = new DereplicationManager(DistributedDataConvertFactory.getInstance(), classifyManager);
+        CondenseManager condenseManager = new CondenseManager(DistributedDataConvertFactory.getInstance(), classifyManager);
 
         LOGGER.error("ManagerChain is : {} -> {} -> {} -> {} -> {}", dereplicationManager.getDescription(), classifyManager.getDescription(),
                 reasoningManager.getDescription(), condenseManager.getDescription(), endChainManager.getDescription());
