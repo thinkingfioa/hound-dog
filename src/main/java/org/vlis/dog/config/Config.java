@@ -22,6 +22,14 @@ public final class Config {
 
     private static final String HOUND_DOG_PROPERTIES = "hound-dog.properties";
     private static String startUpRole;
+
+
+    private static final int DEFAULT_ES_PORT = 9300;
+    private static String apmIndex = "apm2.0-";
+    private static String clusterName = "Apm-Dev";
+    private static String clientModel = "TRANSPORT";
+    private static String hostStr = "10.10.102.101";
+
     public static void configInit() throws IOException {
         LOGGER.info("Reading configuration:" + HOUND_DOG_PROPERTIES);
 
@@ -35,11 +43,37 @@ public final class Config {
 
         Map<String, Object> map = ConfigFileHelper.getConfigSettings(props);
         startUpRole = BaseConfig.getStringProperty(map, "start_up_role", StartUpRoleEnum.DISTRIBUTED_FACADE.getStartUpRoleName());
+
+        apmIndex = props.getProperty("es_index_prefix");
+        clusterName = props.getProperty("es_cluster_name");
+        clientModel = props.getProperty("es_client_mode");
+        hostStr = props.getProperty("es_host_address");
+
         //zmqReceiveAddress = "tcp://0.0.0.0:" + BaseConfig.getIntProperty(map, "message_port", messageReceivePort);
 
     }
 
     public static String getStartUpRole() {
         return startUpRole;
+    }
+
+    public static int getDefaultEsPort() {
+        return DEFAULT_ES_PORT;
+    }
+
+    public static String getApmIndex() {
+        return apmIndex;
+    }
+
+    public static String getClusterName() {
+        return clusterName;
+    }
+
+    public static String getClientModel() {
+        return clientModel;
+    }
+
+    public static String getHostStr() {
+        return hostStr;
     }
 }

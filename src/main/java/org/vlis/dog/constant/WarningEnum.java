@@ -8,6 +8,7 @@ package org.vlis.dog.constant;
 
 
 public enum WarningEnum {
+
     // alarmParentType
     MACHINE("machine"),
     DB("db"),
@@ -15,15 +16,19 @@ public enum WarningEnum {
     APPLICATION("application"),
 
     // alarmType
-    CPU("cpu"),
-    MEMORY("memory"),
-    DISK("disk"),
-    SQL("sql"),
-    CONNECTION("connection"),
-    OLD_USE_RATE("oldUseRate"),
-    DELAYED("delayed"),
-    EXCEPTION("exception"),
-    STATUS_CODE("statusCode");
+    CPU_SYSTEM_USAGE("cpuSystemUsage"),
+    CPU_USER_USAGE("cpuUserUsage"),
+    CPU_LOAD_5("cpuLoad5"),
+    MEMORY_USAGE("memoryUsage"),
+    SWAP_USAGE("swapUsage"),
+    DISK_USAGE("diskUsage"),
+    SQL_EXECUTE("sqlExecute"),
+    SQL_CONNECTION("sqlConnection"),
+    JVM_OLD_USE_RATE("jvmOldUseRate"),
+    APPLICATION_EXCEPTION("exception"),
+    APPLICATION_STATUS_CODE("statusCode"),
+    APPLICATION_CALL("call");
+
 
     /**
      * alarmType 告警类型
