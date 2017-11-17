@@ -1,5 +1,9 @@
 package org.vlis.dog.bean;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+
+import java.io.Serializable;
 import java.util.Map;
 
 /**
@@ -9,7 +13,7 @@ import java.util.Map;
  */
 
 
-public class WarningBean {
+public class WarningBean implements Serializable {
 
     /**
      * 应用关键字, SourceIp_sourcePort
@@ -234,6 +238,32 @@ public class WarningBean {
         warningBean.setUrl(String.valueOf(attributes.get("url")) );
         warningBean.setMountPoint(String.valueOf(attributes.get("mountPoint")) );
         warningBean.setFeature(String.valueOf(attributes.get("feature")) );
+
+        return warningBean;
+    }
+
+    /**
+     * 初始化WarningBean
+     * @param attributes WarningBean的所有属性
+     * @return WarningBean对象
+     */
+    public static WarningBean valueOfJSONObject(JSONObject jsonObject) {
+        WarningBean warningBean = new WarningBean();
+        warningBean.setApplicationKey(jsonObject.getString("applicationKey") );
+        warningBean.setSourceIp(jsonObject.getString("sourceIp") );
+        warningBean.setSourcePort(jsonObject.getString("sourcePort") );
+        warningBean.setSpanId(jsonObject.getString("spanId") );
+        warningBean.setParentSpanId(jsonObject.getString("parentSpanId") );
+        warningBean.setTraceId(jsonObject.getString("traceId") );
+        warningBean.setAlarmParentType(jsonObject.getString("alarmParentType") );
+        warningBean.setAlarmType(jsonObject.getString("alarmType") );
+        warningBean.setAlarmTime(jsonObject.getString("alarmTime") );
+        warningBean.setDestinationIp(jsonObject.getString("destinationIp") );
+        warningBean.setDestinationPort(jsonObject.getString("destinationPort") );
+        warningBean.setExecuteTime(jsonObject.getString("executeTime") );
+        warningBean.setUrl(jsonObject.getString("url") );
+        warningBean.setMountPoint(jsonObject.getString("mountPoint") );
+        warningBean.setFeature(jsonObject.getString("feature") );
 
         return warningBean;
     }

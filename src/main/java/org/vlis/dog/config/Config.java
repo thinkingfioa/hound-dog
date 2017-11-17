@@ -30,6 +30,8 @@ public final class Config {
     private static String clientModel = "TRANSPORT";
     private static String hostStr = "10.10.102.101";
 
+    private static String warningSource = "elasticsearch";
+
     public static void configInit() throws IOException {
         LOGGER.info("Reading configuration:" + HOUND_DOG_PROPERTIES);
 
@@ -48,6 +50,8 @@ public final class Config {
         clusterName = props.getProperty("es_cluster_name");
         clientModel = props.getProperty("es_client_mode");
         hostStr = props.getProperty("es_host_address");
+
+        warningSource = props.getProperty("warning_source");
 
         //zmqReceiveAddress = "tcp://0.0.0.0:" + BaseConfig.getIntProperty(map, "message_port", messageReceivePort);
 
@@ -75,5 +79,9 @@ public final class Config {
 
     public static String getHostStr() {
         return hostStr;
+    }
+
+    public static String getWarningSource() {
+        return warningSource;
     }
 }
