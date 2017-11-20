@@ -45,9 +45,7 @@ public class ClassifyManager extends AbstractManager {
         nextPendingDataBean = cleanWarningBeansOfMachine(storeAfterCleanWarningBeans, nextPendingDataBean);
 
         // 处理器最后一个处理节点
-        DataWrapperBean returnWarningBeans = cleanWarningBeansOfEnd(storeAfterCleanWarningBeans, nextPendingDataBean);
-
-        return returnWarningBeans;
+        return cleanWarningBeansOfEnd(storeAfterCleanWarningBeans, nextPendingDataBean);
     }
 
 
@@ -63,6 +61,9 @@ public class ClassifyManager extends AbstractManager {
             throw new IllegalStateException("DataBean is error.");
         }
 
+        //todo
+        return storeAfterClean;
+
     }
 
     /**
@@ -77,6 +78,8 @@ public class ClassifyManager extends AbstractManager {
             throw new IllegalStateException("DataBean is error.");
         }
 
+        //todo
+        return storeAfterClean;
     }
 
     /**
@@ -91,6 +94,8 @@ public class ClassifyManager extends AbstractManager {
             throw new IllegalStateException("DataBean is error.");
         }
 
+        //todo
+        return storeAfterClean;
     }
 
     /**
@@ -105,6 +110,8 @@ public class ClassifyManager extends AbstractManager {
             throw new IllegalStateException("DataBean is error.");
         }
 
+        //todo
+        return storeAfterClean;
     }
 
 }
