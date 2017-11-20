@@ -16,15 +16,22 @@ public enum WarningEnum {
     APPLICATION("application"),
 
     // alarmType
+    // machine
     CPU_SYSTEM_USAGE("cpuSystemUsage"),
     CPU_USER_USAGE("cpuUserUsage"),
     CPU_LOAD_5("cpuLoad5"),
     MEMORY_USAGE("memoryUsage"),
     SWAP_USAGE("swapUsage"),
     DISK_USAGE("diskUsage"),
+
+    // db
     SQL_EXECUTE("sqlExecute"),
     SQL_CONNECTION("sqlConnection"),
+
+    // jvm
     JVM_OLD_USE_RATE("jvmOldUseRate"),
+
+    // application
     APPLICATION_EXCEPTION("exception"),
     APPLICATION_STATUS_CODE("statusCode"),
     APPLICATION_CALL("call");

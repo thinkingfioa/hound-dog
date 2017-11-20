@@ -3,7 +3,7 @@ package org.vlis.dog.manager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vlis.dog.bean.DataWrapperBean;
-import org.vlis.dog.constant.DataWarpperBeanTypeEnum;
+import org.vlis.dog.constant.DataWrapperBeanTypeEnum;
 import org.vlis.dog.constant.ManagerTypeEnum;
 
 /**
@@ -18,7 +18,7 @@ public class CondenseManager extends AbstractManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(CondenseManager.class);
 
     public CondenseManager(ItfManager successorManager) {
-        super(successorManager, ManagerTypeEnum.DEREPLICATION_MANAGER, DataWarpperBeanTypeEnum.LIST_TYPE);
+        super(successorManager, ManagerTypeEnum.DEREPLICATION_MANAGER, DataWrapperBeanTypeEnum.LIST_TYPE);
     }
 
     /**

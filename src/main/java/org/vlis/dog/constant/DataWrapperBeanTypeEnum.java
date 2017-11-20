@@ -7,7 +7,7 @@ package org.vlis.dog.constant;
  */
 
 
-public enum DataWarpperBeanTypeEnum {
+public enum DataWrapperBeanTypeEnum {
 
     /**
      * 包装的是列表数据
@@ -22,7 +22,7 @@ public enum DataWarpperBeanTypeEnum {
     private String type;
     private String description;
 
-    DataWarpperBeanTypeEnum(String type, String description) {
+    DataWrapperBeanTypeEnum(String type, String description) {
         this.type = type;
         this.description = description;
     }

@@ -1,7 +1,7 @@
 package org.vlis.dog.manager;
 
 import org.vlis.dog.bean.DataWrapperBean;
-import org.vlis.dog.constant.DataWarpperBeanTypeEnum;
+import org.vlis.dog.constant.DataWrapperBeanTypeEnum;
 import org.vlis.dog.constant.ManagerTypeEnum;
 
 /**
@@ -29,9 +29,9 @@ public interface ItfManager {
 
     /**
      * 该Manager所接受的数据类型
-     * @return {@see org.vlis.dog.constant.DataWarpperBeanTypeEnum} 枚举类
+     * @return {@see org.vlis.dog.constant.DataWrapperBeanTypeEnum} 枚举类
      */
-    DataWarpperBeanTypeEnum getPendingDataBeanType ();
+    DataWrapperBeanTypeEnum getPendingDataBeanType ();
 
     /**
      * 判断数据传播是否有问题

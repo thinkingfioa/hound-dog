@@ -1,6 +1,6 @@
 package org.vlis.dog.bean;
 
-import org.vlis.dog.constant.DataWarpperBeanTypeEnum;
+import org.vlis.dog.constant.DataWrapperBeanTypeEnum;
 
 import java.util.*;
 
@@ -11,9 +11,9 @@ import java.util.*;
  */
 
 
-public class MapWarningDataBean implements DataWrapperBean {
+public class MapWarningDataBean implements DataWrapperBean<Map<String, List<WarningBean>> > {
 
-    private DataWarpperBeanTypeEnum WARNING_DATA_BEAN_TYPE_ENUM = DataWarpperBeanTypeEnum.MAP_TYPE;
+    private static final DataWrapperBeanTypeEnum WARNING_DATA_BEAN_TYPE_ENUM = DataWrapperBeanTypeEnum.MAP_TYPE;
 
     private Map<String, List<WarningBean>> warningBeanMap;
 
@@ -21,6 +21,10 @@ public class MapWarningDataBean implements DataWrapperBean {
 
     public MapWarningDataBean(Map<String, List<WarningBean>> warningBeanMap) {
         this.warningBeanMap = new HashMap<String, List<WarningBean>>(warningBeanMap);
+    }
+
+    public MapWarningDataBean() {
+        this.warningBeanMap = new HashMap<String, List<WarningBean>>();
     }
 
     /**
@@ -39,17 +43,20 @@ public class MapWarningDataBean implements DataWrapperBean {
     /**
      * 两个MapWarningBeanDataBean集合融合
      * @param otherMapWarningDataBean 另一个Bean
+     * @return if this Map changed as a result of the call
      */
-    public synchronized void addWarningDataBeanMap(MapWarningDataBean otherMapWarningDataBean) {
+    public synchronized boolean addWarningDataBeanMap(MapWarningDataBean otherMapWarningDataBean) {
         if( null == otherMapWarningDataBean || otherMapWarningDataBean.isEmpty()) {
-            return;
+            return false;
         }
 
-        Set<Map.Entry<String, List<WarningBean>>> otherWarningDataBeanSet = otherMapWarningDataBean.getWarningBeanMap().entrySet();
+        Set<Map.Entry<String, List<WarningBean>>> otherWarningDataBeanSet = otherMapWarningDataBean.getDataBeans().entrySet();
         for(Map.Entry<String, List<WarningBean>> otherWarningDataBean : otherWarningDataBeanSet) {
             String otherWarningDataBeanKey = otherWarningDataBean.getKey();
             this.addWarningDataBeanList(otherWarningDataBeanKey, otherWarningDataBean.getValue());
         }
+
+        return true;
     }
 
     /**
@@ -102,17 +109,18 @@ public class MapWarningDataBean implements DataWrapperBean {
         size += 1;
     }
 
-    /**
-     * 判断是否空集合
-     * @return
-     */
     @Override
-    public boolean isEmpty() {
-        if( null == warningBeanMap || warningBeanMap.isEmpty()) {
-            return true;
+    public boolean addDataWrapperBean(DataWrapperBean otherDataWrapperBean) {
+        if(!WARNING_DATA_BEAN_TYPE_ENUM.equals(otherDataWrapperBean.getDataBeanType())) {
+            return false;
         }
 
-        return false;
+        return addWarningDataBeanMap((MapWarningDataBean) otherDataWrapperBean);
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return null == warningBeanMap || warningBeanMap.isEmpty();
     }
 
     @Override
@@ -120,16 +128,13 @@ public class MapWarningDataBean implements DataWrapperBean {
         return size;
     }
 
-    public Map<String, List<WarningBean>> getWarningBeanMap() {
+    @Override
+    public Map<String, List<WarningBean>>  getDataBeans() {
         return warningBeanMap;
     }
 
-    public void setWarningBeanMap(Map<String, List<WarningBean>> warningBeanMap) {
-        this.warningBeanMap = warningBeanMap;
-    }
-
     @Override
-    public DataWarpperBeanTypeEnum getDataBeanType() {
+    public DataWrapperBeanTypeEnum getDataBeanType() {
         return WARNING_DATA_BEAN_TYPE_ENUM;
     }
 }

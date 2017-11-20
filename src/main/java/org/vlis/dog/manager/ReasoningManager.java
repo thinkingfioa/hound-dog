@@ -3,13 +3,8 @@ package org.vlis.dog.manager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vlis.dog.bean.DataWrapperBean;
-import org.vlis.dog.bean.WarningBean;
-import org.vlis.dog.constant.DataWarpperBeanTypeEnum;
+import org.vlis.dog.constant.DataWrapperBeanTypeEnum;
 import org.vlis.dog.constant.ManagerTypeEnum;
-import org.vlis.dog.factory.ItfDataConvertFactory;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author thinking_fioa
@@ -23,7 +18,7 @@ public class ReasoningManager extends AbstractManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(ReasoningManager.class);
 
     public ReasoningManager( ItfManager successorManager) {
-        super(successorManager, ManagerTypeEnum.REASONING_MANAGER, DataWarpperBeanTypeEnum.MAP_TYPE);
+        super(successorManager, ManagerTypeEnum.REASONING_MANAGER, DataWrapperBeanTypeEnum.MAP_TYPE);
     }
 
     /**

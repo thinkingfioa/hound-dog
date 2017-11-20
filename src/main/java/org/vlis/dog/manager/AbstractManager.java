@@ -1,7 +1,9 @@
 package org.vlis.dog.manager;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.vlis.dog.bean.DataWrapperBean;
-import org.vlis.dog.constant.DataWarpperBeanTypeEnum;
+import org.vlis.dog.constant.DataWrapperBeanTypeEnum;
 import org.vlis.dog.constant.ManagerTypeEnum;
 
 /**
@@ -12,6 +14,8 @@ import org.vlis.dog.constant.ManagerTypeEnum;
 
 
 public abstract class AbstractManager implements ItfManager {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractManager.class);
 
     /**
      * 后继处理的Manager
@@ -26,10 +30,10 @@ public abstract class AbstractManager implements ItfManager {
     /**
      * 待处理数据类型，也就是Manager输入数据
      */
-    private DataWarpperBeanTypeEnum pendingDataBeanType;
+    private DataWrapperBeanTypeEnum pendingDataBeanType;
 
     AbstractManager(ItfManager successorManager,
-                              ManagerTypeEnum managerTypeEnum, DataWarpperBeanTypeEnum pendingDataBeanType) {
+                              ManagerTypeEnum managerTypeEnum, DataWrapperBeanTypeEnum pendingDataBeanType) {
         this.successorManager = successorManager;
         this.managerTypeEnum = managerTypeEnum;
         this.pendingDataBeanType = pendingDataBeanType;
@@ -66,6 +70,59 @@ public abstract class AbstractManager implements ItfManager {
     protected abstract DataWrapperBean cleanWarningBeans(DataWrapperBean warningBeans);
 
     /**
+     * 处理{@see org.vlis.dog.constant.WarningEnum.MACHINE} Machine机器类型接口，提供一个缺省的函数实现
+     * @param storeAfterClean 存放的处理后数据
+     * @param pendingDataBean 待处理数据
+     * @return 下一个类型数据处理
+     */
+    protected DataWrapperBean cleanWarningBeansOfMachine(DataWrapperBean storeAfterClean, DataWrapperBean pendingDataBean) {
+        return storeAfterClean;
+    }
+
+    /**
+     * 处理{@see org.vlis.dog.constant.WarningEnum.DB} Machine机器类型接口，提供一个缺省的函数实现
+     * @param storeAfterClean 存放的处理后数据
+     * @param pendingDataBean 待处理数据
+     * @return 下一个类型数据处理
+     */
+    protected DataWrapperBean cleanWarningBeansOfDb(DataWrapperBean storeAfterClean, DataWrapperBean pendingDataBean) {
+        return storeAfterClean;
+    }
+
+    /**
+     * 处理{@see org.vlis.dog.constant.WarningEnum.JVM} Machine机器类型接口，提供一个缺省的函数实现
+     * @param storeAfterClean 存放的处理后数据
+     * @param pendingDataBean 待处理数据
+     * @return 下一个类型数据处理
+     */
+    protected DataWrapperBean cleanWarningBeansOfJvm(DataWrapperBean storeAfterClean, DataWrapperBean pendingDataBean) {
+        return storeAfterClean;
+    }
+
+    /**
+     * 处理{@see org.vlis.dog.constant.WarningEnum.APPLICATION} Machine机器类型接口，提供一个缺省的函数实现
+     * @param storeAfterClean 存放的处理后数据
+     * @param pendingDataBean 待处理数据
+     * @return 下一个类型数据处理
+     */
+    protected DataWrapperBean cleanWarningBeansOfApplication(DataWrapperBean storeAfterClean, DataWrapperBean pendingDataBean) {
+        return storeAfterClean;
+    }
+
+    /**
+     * Manager最后一个处理节点，满足下一个链路的输入要求数据
+     * @param storeAfterClean 存放的处理后数据
+     * @return 下一个类型数据处理
+     */
+    protected DataWrapperBean cleanWarningBeansOfEnd(DataWrapperBean storeAfterClean, DataWrapperBean pendingDataBean) {
+        if(null != pendingDataBean && !pendingDataBean.isEmpty()) {
+            LOGGER.error("[untreated]have some surplus waningData . [size]", pendingDataBean.size());
+        }
+
+        return storeAfterClean;
+    }
+
+    /**
      * 返回Manager管理器的类型
      * @return  Manager管理器的类型
      */
@@ -76,10 +133,10 @@ public abstract class AbstractManager implements ItfManager {
 
     /**
      * 该Manager所接受的数据类型
-     * @return see org.vlis.dog.constant.DataWarpperBeanTypeEnum 枚举类
+     * @return see org.vlis.dog.constant.DataWrapperBeanTypeEnum 枚举类
      */
     @Override
-    public DataWarpperBeanTypeEnum getPendingDataBeanType () {
+    public DataWrapperBeanTypeEnum getPendingDataBeanType () {
         return pendingDataBeanType;
     }
 
