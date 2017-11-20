@@ -244,7 +244,7 @@ public class WarningBean implements Serializable {
 
     /**
      * 初始化WarningBean
-     * @param attributes WarningBean的所有属性
+     * @param jsonObject WarningBean的所有属性
      * @return WarningBean对象
      */
     public static WarningBean valueOfJSONObject(JSONObject jsonObject) {

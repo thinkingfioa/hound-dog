@@ -2,6 +2,8 @@ package org.vlis.dog.start;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.vlis.dog.bean.DataWrapperBean;
+import org.vlis.dog.bean.ListWarningDataBean;
 import org.vlis.dog.bean.WarningBean;
 import org.vlis.dog.config.Config;
 import org.vlis.dog.constant.StartUpRoleEnum;
@@ -10,7 +12,6 @@ import org.vlis.dog.facade.ItfFacade;
 import org.vlis.dog.facade.ThirdPartyFacade;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -32,9 +33,9 @@ public class StartHoundDog {
             Config.configInit();
             LOGGER.info(" Hound-Dog start....");
             ItfFacade rootCauseAnalysisFacade = getRootCauseAnalysisFacade();
-            List<WarningBean> warningBeanList = new ArrayList<WarningBean>();
+            List<WarningBean> warningBeanList = WarningDataFetch.fetchAllWarningBeansFromDisk();
             long beforeWarningBeansSize = warningBeanList.size();
-            List<WarningBean> rootWarningBeanList = rootCauseAnalysisFacade.startRootCauseAnalysis(warningBeanList);
+            DataWrapperBean rootWarningBeanList = rootCauseAnalysisFacade.startRootCauseAnalysis(ListWarningDataBean.valueOf(warningBeanList));
             long afterWarningBeansSize = rootWarningBeanList.size();
 
             LOGGER.warn("warning compress rate is ", (double)beforeWarningBeansSize / afterWarningBeansSize);

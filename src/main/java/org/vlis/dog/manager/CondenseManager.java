@@ -1,0 +1,35 @@
+package org.vlis.dog.manager;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.vlis.dog.bean.DataWrapperBean;
+import org.vlis.dog.constant.DataWarpperBeanTypeEnum;
+import org.vlis.dog.constant.ManagerTypeEnum;
+
+/**
+ * @author thinking_fioa
+ * @createTime 2017/11/2
+ * @description 告警压缩模块
+ */
+
+
+public class CondenseManager extends AbstractManager {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CondenseManager.class);
+
+    public CondenseManager(ItfManager successorManager) {
+        super(successorManager, ManagerTypeEnum.DEREPLICATION_MANAGER, DataWarpperBeanTypeEnum.LIST_TYPE);
+    }
+
+    /**
+     *
+     * @param warningBeans 告警数据集
+     * @return  {@code DataWrapperBean } 归一化数据集，也就是压缩所有相同的数据
+     */
+    @Override
+    public DataWrapperBean cleanWarningBeans(DataWrapperBean warningBeans) {
+        //todo::
+        LOGGER.info("{} starting...", ManagerTypeEnum.DEREPLICATION_MANAGER.getDescription());
+        return null;
+    }
+}

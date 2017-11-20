@@ -1,9 +1,7 @@
 package org.vlis.dog.facade;
 
-import org.vlis.dog.bean.WarningBean;
+import org.vlis.dog.bean.DataWrapperBean;
 import org.vlis.dog.manager.ItfManager;
-
-import java.util.List;
 
 /**
  * @author thinking_fioa
@@ -15,16 +13,16 @@ import java.util.List;
 public interface ItfFacade {
     /**
      * 启动根源性分析
-     * @param warningBeanList 告警分析集合
-     * @return {@code List<WarningBean> } 返回根源性告警
+     * @param DataWarpperBean 告警分析集合
+     * @return {DataWrapperBean } 返回根源性告警
      */
-    List<WarningBean> startRootCauseAnalysis(List<WarningBean> warningBeanList);
+    DataWrapperBean startRootCauseAnalysis(DataWrapperBean warningBeans);
 
     /**
      * 启动根源性分析
      * @param rootManager 管理器的起始点: rootManager
-     * @param warningBeanList 告警分析集合
-     * @return {@code List<WarningBean> } 返回根源性告警
+     * @param DataWarpperBean 告警分析集合
+     * @return {@code DataWrapperBean } 返回根源性告警
      */
-    List<WarningBean> startBootCauseAnalysisWithRootManager(ItfManager rootManager, List<WarningBean> warningBeanList);
+    DataWrapperBean startBootCauseAnalysisWithRootManager(ItfManager rootManager, DataWrapperBean warningBeans);
 }

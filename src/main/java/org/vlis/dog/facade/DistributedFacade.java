@@ -5,10 +5,10 @@ import org.slf4j.LoggerFactory;
 import org.vlis.dog.factory.DistributedDataConvertFactory;
 import org.vlis.dog.manager.DefaultManager;
 import org.vlis.dog.manager.ItfManager;
-import org.vlis.dog.manager.classify.ClassifyManager;
-import org.vlis.dog.manager.condense.CondenseManager;
-import org.vlis.dog.manager.dereplication.DereplicationManager;
-import org.vlis.dog.manager.reasoning.ReasoningManager;
+import org.vlis.dog.manager.ClassifyManager;
+import org.vlis.dog.manager.CondenseManager;
+import org.vlis.dog.manager.DereplicationManager;
+import org.vlis.dog.manager.ReasoningManager;
 
 /**
  * @author thinking_fioa
@@ -29,11 +29,11 @@ public class DistributedFacade extends AbstractCommonFacade {
     public ItfManager buildManagerChain() {
         LOGGER.info(" build DistributedFacade starting....");
 
-        DefaultManager endChainManager = new DefaultManager(DistributedDataConvertFactory.getInstance());
-        DereplicationManager dereplicationManager = new DereplicationManager(DistributedDataConvertFactory.getInstance(), endChainManager);
-        ReasoningManager reasoningManager = new ReasoningManager(DistributedDataConvertFactory.getInstance(), dereplicationManager);
-        ClassifyManager classifyManager = new ClassifyManager(DistributedDataConvertFactory.getInstance(), reasoningManager);
-        CondenseManager condenseManager = new CondenseManager(DistributedDataConvertFactory.getInstance(), classifyManager);
+        DefaultManager endChainManager = new DefaultManager();
+        CondenseManager condenseManager = new CondenseManager(endChainManager);
+        ReasoningManager reasoningManager = new ReasoningManager(condenseManager);
+        DereplicationManager dereplicationManager = new DereplicationManager(reasoningManager);
+        ClassifyManager classifyManager = new ClassifyManager(dereplicationManager);
 
         LOGGER.error("ManagerChain is : {} -> {} -> {} -> {} -> {}", dereplicationManager.getDescription(), classifyManager.getDescription(),
                 reasoningManager.getDescription(), condenseManager.getDescription(), endChainManager.getDescription());

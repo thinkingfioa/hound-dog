@@ -2,10 +2,8 @@ package org.vlis.dog.facade;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.vlis.dog.bean.WarningBean;
+import org.vlis.dog.bean.DataWrapperBean;
 import org.vlis.dog.manager.ItfManager;
-
-import java.util.List;
 
 /**
  * @author thinking_fioa
@@ -25,33 +23,33 @@ public abstract class AbstractCommonFacade implements ItfManagerChainFacade, Itf
 
     /**
      * 启动根源性分析
-     * @param warningBeanList 告警分析集合
-     * @return {@code List<WarningBean> } 返回根源性告警
+     * @param warningBeans 告警分析集合
+     * @return {@code warningBeans } 返回根源性告警
      */
     @Override
-    public List<WarningBean> startRootCauseAnalysis(List<WarningBean> warningBeanList) {
+    public DataWrapperBean startRootCauseAnalysis(DataWrapperBean warningBeans) {
         LOGGER.info(" startRootCauseAnalysis...");
         if(null == localRootManager) {
             localRootManager = buildManagerChain();
         }
 
-        return localRootManager.dealWithWarningBeanList(warningBeanList);
+        return localRootManager.dealWithWarningBeans(warningBeans);
     }
 
     /**
      * 启动根源性分析
      * @param rootManager 管理器的起始点: rootManager
-     * @param warningBeanList 告警分析集合
-     * @return {@code List<WarningBean> } 返回根源性告警
+     * @param warningBeans 告警分析集合
+     * @return {@code warningBeans } 返回根源性告警
      */
     @Override
-    public List<WarningBean> startBootCauseAnalysisWithRootManager(ItfManager rootManager, List<WarningBean> warningBeanList) {
+    public DataWrapperBean startBootCauseAnalysisWithRootManager(ItfManager rootManager, DataWrapperBean warningBeans) {
         if(null == rootManager) {
             throw new NullPointerException("rootManager is null.");
         }
         LOGGER.info(" startBootCauseAnalysisWithRootManager...");
 
-        return rootManager.dealWithWarningBeanList(warningBeanList);
+        return rootManager.dealWithWarningBeans(warningBeans);
     }
 
     public ItfManager getLocalRootManager() {

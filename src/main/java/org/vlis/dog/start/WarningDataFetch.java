@@ -107,7 +107,7 @@ public final class WarningDataFetch {
      * 获取告警数据，从磁盘获取
      * @return
      */
-    public static List<WarningBean> fetchAllWarningBeansFromDisk() {
+    static List<WarningBean> fetchAllWarningBeansFromDisk() {
 
         System.out.println("address: " + WARNING_DATA_FILE_ADDRESS);
 
@@ -124,8 +124,6 @@ public final class WarningDataFetch {
         System.out.println("warningBeanList [size]" + warningBeanList.size());
         return warningBeanList;
     }
-
-
 
     /**
      * 获取于某条traceId相关的告警信息

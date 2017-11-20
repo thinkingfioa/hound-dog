@@ -20,17 +20,19 @@ public class DistributedDataConvertFactory implements ItfDataConvertFactory {
     @Override
     public Map<String, List<WarningBean>> dataConvert(List<WarningBean> warningBeanList, ManagerTypeEnum managerTypeEnum) {
 
+
+        if(ManagerTypeEnum.CLASSIFY_MANAGER.equals(managerTypeEnum)) {
+            // 告警分类节点
+
+        }
+
         //todo::
         if(ManagerTypeEnum.DEREPLICATION_MANAGER.equals(managerTypeEnum)) {
             // 告警去重节点
         }
 
-        if(ManagerTypeEnum.CLASSIFY_MANAGER.equals(managerTypeEnum)) {
-            // 告警分类节点
-        }
-
         if(ManagerTypeEnum.REASONING_MANAGER.equals(managerTypeEnum)) {
-            // 告警根源性追踪节点
+            // 告警根源性追踪节点，推理
         }
 
         if(ManagerTypeEnum.CONDENSE_MANAGER.equals(managerTypeEnum)) {
