@@ -8,6 +8,7 @@ import org.vlis.dog.bean.WarningBean;
 import org.vlis.dog.constant.DataWrapperBeanTypeEnum;
 import org.vlis.dog.constant.ManagerTypeEnum;
 import org.vlis.dog.constant.WarningEnum;
+import org.vlis.dog.util.WarningDataExtractUtil;
 
 import java.util.List;
 import java.util.Map;
@@ -38,16 +39,16 @@ public final class DereplicationManager extends AbstractManager {
         LOGGER.info("{} starting...", ManagerTypeEnum.CONDENSE_MANAGER.getDescription());
         DataWrapperBean storeAfterCleanWarningBeans = new MapWarningDataBean();
 
-        // application 分类
+        // application 去重
         cleanWarningBeansOfApplication(storeAfterCleanWarningBeans, warningBeans);
 
-        // Jvm 分类
+        // Jvm 去重
         cleanWarningBeansOfJvm(storeAfterCleanWarningBeans, warningBeans);
 
-        // DB 分类
+        // DB 去重
         cleanWarningBeansOfDb(storeAfterCleanWarningBeans, warningBeans);
 
-        // Machine 分类
+        // Machine 去重
         cleanWarningBeansOfMachine(storeAfterCleanWarningBeans, warningBeans);
 
         // 处理器最后一个处理节点
@@ -59,7 +60,6 @@ public final class DereplicationManager extends AbstractManager {
      * 第一步：根据AlarmParentType获取数据
      * @param storeAfterClean 存放的处理后数据
      * @param pendingDataBean 待处理数据
-     * @return 下一个类型数据处理
      */
     @Override
     public void cleanWarningBeansOfMachine(DataWrapperBean storeAfterClean, DataWrapperBean pendingDataBean) {
@@ -70,7 +70,7 @@ public final class DereplicationManager extends AbstractManager {
 
         // 第一步：
         // 获取分类后Application应用数据
-        MapWarningDataBean jvmAlarmTypeMap = extractWarningDataBean(pendingDataBean, WarningEnum.MACHINE);
+        MapWarningDataBean jvmAlarmTypeMap = WarningDataExtractUtil.extractWarningDataBean(pendingDataBean, WarningEnum.MACHINE);
 
         // 第二步：挑选出最优的
         //todo:: 算法提供
@@ -81,7 +81,6 @@ public final class DereplicationManager extends AbstractManager {
      * 第一步：根据AlarmParentType获取数据
      * @param storeAfterClean 存放的处理后数据
      * @param pendingDataBean 待处理数据
-     * @return 下一个类型数据处理
      */
     @Override
     public void cleanWarningBeansOfDb(DataWrapperBean storeAfterClean, DataWrapperBean pendingDataBean) {
@@ -92,7 +91,7 @@ public final class DereplicationManager extends AbstractManager {
 
         // 第一步：
         // 获取分类后Application应用数据
-        MapWarningDataBean jvmAlarmTypeMap = extractWarningDataBean(pendingDataBean, WarningEnum.DB);
+        MapWarningDataBean jvmAlarmTypeMap = WarningDataExtractUtil.extractWarningDataBean(pendingDataBean, WarningEnum.DB);
 
         // 第二步：利用去重复化算法: Bloom Filter
         //todo:: 算法提供
@@ -104,7 +103,6 @@ public final class DereplicationManager extends AbstractManager {
      * 第一步：根据AlarmParentType获取数据
      * @param storeAfterClean 存放的处理后数据
      * @param pendingDataBean 待处理数据
-     * @return 下一个类型数据处理
      */
     @Override
     public void cleanWarningBeansOfJvm(DataWrapperBean storeAfterClean, DataWrapperBean pendingDataBean) {
@@ -115,7 +113,7 @@ public final class DereplicationManager extends AbstractManager {
 
         // 第一步：
         // 获取分类后Application应用数据
-        MapWarningDataBean jvmAlarmTypeMap = extractWarningDataBean(pendingDataBean, WarningEnum.JVM);
+        MapWarningDataBean jvmAlarmTypeMap = WarningDataExtractUtil.extractWarningDataBean(pendingDataBean, WarningEnum.JVM);
 
         // 第二步：利用去重复化算法: Bloom Filter
         //todo:: 算法提供
@@ -130,7 +128,6 @@ public final class DereplicationManager extends AbstractManager {
      * 第二步：
      * @param storeAfterClean 存放的处理后数据
      * @param pendingDataBean 待处理数据
-     * @return 下一个类型数据处理
      */
     @Override
     public void cleanWarningBeansOfApplication(DataWrapperBean storeAfterClean, DataWrapperBean pendingDataBean) {
@@ -141,36 +138,13 @@ public final class DereplicationManager extends AbstractManager {
 
         // 第一步：
         // 获取分类后Application应用数据
-        MapWarningDataBean applicationAlarmTypeMap = extractWarningDataBean(pendingDataBean, WarningEnum.APPLICATION);
+        MapWarningDataBean applicationAlarmTypeMap = WarningDataExtractUtil.extractWarningDataBean(pendingDataBean, WarningEnum.APPLICATION);
+        // 第二步:
+        // 补充DB的traceId数据相同的数据进来，同时把原来的地方移除
 
         // 第二步：利用去重复化算法: Bloom Filter
         //todo:: 算法提供
 
-    }
-
-    /**
-     * 提取告警信息，按照提供的{@see org.vlis.dog.constant.WarningEnum}来提取
-     * @param pendingDataBean 原始数据
-     * @param warningBeanEnum 提取类型
-     * @return 提取出的数据
-     */
-    private MapWarningDataBean extractWarningDataBean(DataWrapperBean pendingDataBean, WarningEnum warningBeanEnum) {
-        if(null == pendingDataBean) {
-            throw new NullPointerException("pendingDataBean is null.");
-        }
-
-        MapWarningDataBean extractAlarmTypeMap = new MapWarningDataBean();
-        Map<String, List<WarningBean>> pendingWarningBeanMap = ((MapWarningDataBean)pendingDataBean).getDataBeans();
-
-        Set<Map.Entry<String, List<WarningBean>>> pendingWarningBeanSet = pendingWarningBeanMap.entrySet();
-        for(Map.Entry<String, List<WarningBean>> onePendingWarningBean : pendingWarningBeanSet) {
-            String key = onePendingWarningBean.getKey();
-            if(key.startsWith(warningBeanEnum.getAlarmType())) {
-                extractAlarmTypeMap.addWarningDataBeanList(key, onePendingWarningBean.getValue());
-            }
-        }
-
-        return extractAlarmTypeMap;
     }
 
 }

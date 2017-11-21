@@ -73,7 +73,6 @@ public abstract class AbstractManager implements ItfManager {
      * 处理{@see org.vlis.dog.constant.WarningEnum.MACHINE} Machine机器类型接口，提供一个缺省的函数实现
      * @param storeAfterClean 存放的处理后数据
      * @param pendingDataBean 待处理数据
-     * @return 下一个类型数据处理
      */
     protected void cleanWarningBeansOfMachine(DataWrapperBean storeAfterClean, DataWrapperBean pendingDataBean) { }
 
@@ -81,7 +80,6 @@ public abstract class AbstractManager implements ItfManager {
      * 处理{@see org.vlis.dog.constant.WarningEnum.DB} Db类型接口，提供一个缺省的函数实现
      * @param storeAfterClean 存放的处理后数据
      * @param pendingDataBean 待处理数据
-     * @return 下一个类型数据处理
      */
     protected void cleanWarningBeansOfDb(DataWrapperBean storeAfterClean, DataWrapperBean pendingDataBean) { }
 
@@ -89,7 +87,6 @@ public abstract class AbstractManager implements ItfManager {
      * 处理{@see org.vlis.dog.constant.WarningEnum.JVM} Jvm类型接口，提供一个缺省的函数实现
      * @param storeAfterClean 存放的处理后数据
      * @param pendingDataBean 待处理数据
-     * @return 下一个类型数据处理
      */
     protected void cleanWarningBeansOfJvm(DataWrapperBean storeAfterClean, DataWrapperBean pendingDataBean) { }
 
@@ -97,7 +94,6 @@ public abstract class AbstractManager implements ItfManager {
      * 处理{@see org.vlis.dog.constant.WarningEnum.APPLICATION} Application类型接口，提供一个缺省的函数实现
      * @param storeAfterClean 存放的处理后数据
      * @param pendingDataBean 待处理数据
-     * @return 下一个类型数据处理
      */
     protected void cleanWarningBeansOfApplication(DataWrapperBean storeAfterClean, DataWrapperBean pendingDataBean) { }
 

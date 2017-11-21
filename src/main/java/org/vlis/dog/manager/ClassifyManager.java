@@ -60,7 +60,6 @@ public class ClassifyManager extends AbstractManager {
      * 处理{@see org.vlis.dog.constant.WarningEnum.MACHINE} Machine机器类型接口
      * 第一步：根据AlarmParentType获取数据
      * 第二步：机器类型种类比较多, 按照各个硬件资源维度来分类
-     * @return 下一个类型数据处理
      */
     @Override
     public void cleanWarningBeansOfMachine(DataWrapperBean storeAfterClean, DataWrapperBean pendingDataBean) {
@@ -96,7 +95,6 @@ public class ClassifyManager extends AbstractManager {
      * 第二步：处理{@code org.vlis.dog.constant.WarningEnum.DB}和traceId为Key, 将数据库数据分割分类
      * @param storeAfterClean 存放的处理后数据
      * @param pendingDataBean 待处理数据
-     * @return 下一个类型数据处理
      */
     @Override
     public void cleanWarningBeansOfDb(DataWrapperBean storeAfterClean, DataWrapperBean pendingDataBean) {
@@ -131,7 +129,6 @@ public class ClassifyManager extends AbstractManager {
      * 第二步：处理{@code org.vlis.dog.constant.WarningEnum.JVM}和applicationKey作为Key, 将应用数据分割分类
      * @param storeAfterClean 存放的处理后数据，需要的类型是: {@see org.vlis.dog.bean.MapWarningDataBean}
      * @param pendingDataBean 待处理数据 需要的类型是: {@see org.vlis.dog.bean.ListWarningDataBean}
-     * @return 下一个类型数据处理
      */
     @Override
     public void cleanWarningBeansOfJvm(DataWrapperBean storeAfterClean, DataWrapperBean pendingDataBean) {
@@ -164,7 +161,6 @@ public class ClassifyManager extends AbstractManager {
      * 第二部：{@code org.vlis.dog.constant.WarningEnum.APPLICATION}和traceId作为Key，将分布式调用所产生的信息放到一起。
      * @param storeAfterClean 存放的处理后数据，需要的类型是: {@see org.vlis.dog.bean.MapWarningDataBean}
      * @param pendingDataBean 待处理数据 需要的类型是: {@see org.vlis.dog.bean.ListWarningDataBean}
-     * @return 下一个类型数据处理
      */
     @Override
     public void cleanWarningBeansOfApplication(DataWrapperBean storeAfterClean, DataWrapperBean pendingDataBean) {
@@ -191,5 +187,4 @@ public class ClassifyManager extends AbstractManager {
             ((MapWarningDataBean)storeAfterClean).addWarningDataBean(traceIdKey, oneWarningBean);
         }
     }
-
 }

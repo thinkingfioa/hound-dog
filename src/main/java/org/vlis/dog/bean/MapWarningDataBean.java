@@ -41,6 +41,19 @@ public class MapWarningDataBean implements DataWrapperBean<Map<String, List<Warn
     }
 
     /**
+     * 获取Key的集合第一个元素
+     * @param key 查询key
+     * @return 集合中没有key，返回null。集合中有key,返回第一个元素
+     */
+    public WarningBean getFirstWarningBeanByKey(String key) {
+        if(null == warningBeanMap || warningBeanMap.isEmpty() || !containsKey(key)) {
+            return null;
+        }
+
+        return warningBeanMap.get(key).get(0);
+    }
+
+    /**
      * 两个MapWarningBeanDataBean集合融合
      * @param otherMapWarningDataBean 另一个Bean
      * @return if this Map changed as a result of the call
