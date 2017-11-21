@@ -3,12 +3,7 @@ package org.vlis.dog.facade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vlis.dog.factory.DistributedDataConvertFactory;
-import org.vlis.dog.manager.DefaultManager;
-import org.vlis.dog.manager.ItfManager;
-import org.vlis.dog.manager.ClassifyManager;
-import org.vlis.dog.manager.CondenseManager;
-import org.vlis.dog.manager.DereplicationManager;
-import org.vlis.dog.manager.ReasoningManager;
+import org.vlis.dog.manager.*;
 
 /**
  * @author thinking_fioa
@@ -32,11 +27,12 @@ public class DistributedFacade extends AbstractCommonFacade {
         DefaultManager endChainManager = new DefaultManager();
         CondenseManager condenseManager = new CondenseManager(endChainManager);
         ReasoningManager reasoningManager = new ReasoningManager(condenseManager);
-        DereplicationManager dereplicationManager = new DereplicationManager(reasoningManager);
+        CombineManager combineManager = new CombineManager(reasoningManager);
+        DereplicationManager dereplicationManager = new DereplicationManager(combineManager);
         ClassifyManager classifyManager = new ClassifyManager(dereplicationManager);
 
-        LOGGER.error("ManagerChain is : {} -> {} -> {} -> {} -> {}", dereplicationManager.getDescription(), classifyManager.getDescription(),
-                reasoningManager.getDescription(), condenseManager.getDescription(), endChainManager.getDescription());
+        LOGGER.error("ManagerChain is : {} -> {} -> {} -> {} -> {} -> {}", classifyManager.getDescription(), dereplicationManager.getDescription(),
+                combineManager.getDescription(), reasoningManager.getDescription(), condenseManager.getDescription(), endChainManager.getDescription());
 
         LOGGER.info(" build DistributedFacade end....");
         return dereplicationManager;

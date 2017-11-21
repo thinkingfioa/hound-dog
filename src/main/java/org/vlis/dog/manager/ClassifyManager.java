@@ -40,19 +40,19 @@ public class ClassifyManager extends AbstractManager {
         DataWrapperBean storeAfterCleanWarningBeans = new MapWarningDataBean();
 
         // application 分类
-        DataWrapperBean nextPendingDataBean  =  cleanWarningBeansOfApplication(storeAfterCleanWarningBeans, warningBeans);
+        cleanWarningBeansOfApplication(storeAfterCleanWarningBeans, warningBeans);
 
         // Jvm 分类
-        nextPendingDataBean = cleanWarningBeansOfJvm(storeAfterCleanWarningBeans, nextPendingDataBean);
+        cleanWarningBeansOfJvm(storeAfterCleanWarningBeans, warningBeans);
 
         // DB 分类
-        nextPendingDataBean = cleanWarningBeansOfDb(storeAfterCleanWarningBeans, nextPendingDataBean);
+        cleanWarningBeansOfDb(storeAfterCleanWarningBeans, warningBeans);
 
         // Machine 分类
-        nextPendingDataBean = cleanWarningBeansOfMachine(storeAfterCleanWarningBeans, nextPendingDataBean);
+        cleanWarningBeansOfMachine(storeAfterCleanWarningBeans, warningBeans);
 
         // 处理器最后一个处理节点
-        return cleanWarningBeansOfEnd(storeAfterCleanWarningBeans, nextPendingDataBean);
+        return cleanWarningBeansOfEnd(storeAfterCleanWarningBeans, warningBeans);
     }
 
 
@@ -63,7 +63,7 @@ public class ClassifyManager extends AbstractManager {
      * @return 下一个类型数据处理
      */
     @Override
-    public DataWrapperBean cleanWarningBeansOfMachine(DataWrapperBean storeAfterClean, DataWrapperBean pendingDataBean) {
+    public void cleanWarningBeansOfMachine(DataWrapperBean storeAfterClean, DataWrapperBean pendingDataBean) {
         if(! canAcceptDataBeanType(pendingDataBean)|| !(pendingDataBean instanceof ListWarningDataBean)
                 || !(storeAfterClean instanceof MapWarningDataBean) ) {
             throw new IllegalStateException("DataBean is error.");
@@ -71,7 +71,6 @@ public class ClassifyManager extends AbstractManager {
 
         // 第一步:
         // machine对应的AlarmParentType，是:WarningEnum.MACHINE
-        ListWarningDataBean nextDataWrapperBean = new ListWarningDataBean();
         List<WarningBean> machineAlarmTypeBean = new ArrayList<WarningBean>();
 
         List<WarningBean> pendingWarningBeanList = ((ListWarningDataBean)pendingDataBean).getDataBeans();
@@ -79,31 +78,28 @@ public class ClassifyManager extends AbstractManager {
         for(WarningBean oneWarningBean : pendingWarningBeanList) {
             if(WarningEnum.MACHINE.getAlarmType().equals(oneWarningBean.getAlarmParentType())) {
                 machineAlarmTypeBean.add(oneWarningBean);
-            } else {
-                nextDataWrapperBean.add(oneWarningBean);
             }
         }
 
         // 第二步：
         // 硬件资源按照AlarmType和SourceIp作为Key，进行分类
         for(WarningBean oneWarningBean : machineAlarmTypeBean) {
-            String sourceIpKey = WordJointUtil.joinWords(oneWarningBean.getAlarmType(), oneWarningBean.getSourceIp());
+            String sourceIpKey = WordJointUtil.joinWords(oneWarningBean.getAlarmParentType(), oneWarningBean.getAlarmType(), oneWarningBean.getSourceIp());
             ((MapWarningDataBean)storeAfterClean).addWarningDataBean(sourceIpKey, oneWarningBean);
         }
-        return nextDataWrapperBean;
 
     }
 
     /**
      * 处理{@see org.vlis.dog.constant.WarningEnum.DB} db机器类型接口
      * 第一步：根据AlarmParentType获取数据
-     * 第二步：traceId为Key, 将数据库数据分割分类
+     * 第二步：处理{@code org.vlis.dog.constant.WarningEnum.DB}和traceId为Key, 将数据库数据分割分类
      * @param storeAfterClean 存放的处理后数据
      * @param pendingDataBean 待处理数据
      * @return 下一个类型数据处理
      */
     @Override
-    public DataWrapperBean cleanWarningBeansOfDb(DataWrapperBean storeAfterClean, DataWrapperBean pendingDataBean) {
+    public void cleanWarningBeansOfDb(DataWrapperBean storeAfterClean, DataWrapperBean pendingDataBean) {
         if(! canAcceptDataBeanType(pendingDataBean) || !(pendingDataBean instanceof ListWarningDataBean)
                 || !(storeAfterClean instanceof MapWarningDataBean) ) {
             throw new IllegalStateException("DataBean is error.");
@@ -111,7 +107,6 @@ public class ClassifyManager extends AbstractManager {
 
         //第一步：
         // database对应的AlarmParentType 是: WarningEnum.DB
-        ListWarningDataBean nextDataWrapperBean = new ListWarningDataBean();
         List<WarningBean> dbAlarmTypeBean = new ArrayList<WarningBean>();
 
         List<WarningBean> pendingWarningBeanList = ((ListWarningDataBean)pendingDataBean).getDataBeans();
@@ -119,30 +114,27 @@ public class ClassifyManager extends AbstractManager {
         for(WarningBean oneWarningBean : pendingWarningBeanList) {
             if(WarningEnum.DB.getAlarmType().equals(oneWarningBean.getAlarmParentType())) {
                 dbAlarmTypeBean.add(oneWarningBean);
-            } else {
-                nextDataWrapperBean.add(oneWarningBean);
             }
         }
 
         // 第二步：以traceId为Key,分类
         for(WarningBean oneWarningBean : dbAlarmTypeBean) {
-            String traceIdKey = oneWarningBean.getTraceId();
+            String traceIdKey = WordJointUtil.warningEnumJointWord(WarningEnum.DB, oneWarningBean.getTraceId());
             ((MapWarningDataBean)storeAfterClean).addWarningDataBean(traceIdKey, oneWarningBean);
         }
 
-        return nextDataWrapperBean;
     }
 
     /**
      * 处理{@see org.vlis.dog.constant.WarningEnum.JVM} jvm机器类型接口
      * 第一步：根据AlarmParentType获取数据
-     * 第二步：applicationKey作为Key, 将应用数据分割分类
+     * 第二步：处理{@code org.vlis.dog.constant.WarningEnum.JVM}和applicationKey作为Key, 将应用数据分割分类
      * @param storeAfterClean 存放的处理后数据，需要的类型是: {@see org.vlis.dog.bean.MapWarningDataBean}
      * @param pendingDataBean 待处理数据 需要的类型是: {@see org.vlis.dog.bean.ListWarningDataBean}
      * @return 下一个类型数据处理
      */
     @Override
-    public DataWrapperBean cleanWarningBeansOfJvm(DataWrapperBean storeAfterClean, DataWrapperBean pendingDataBean) {
+    public void cleanWarningBeansOfJvm(DataWrapperBean storeAfterClean, DataWrapperBean pendingDataBean) {
         if(! canAcceptDataBeanType(pendingDataBean)|| !(pendingDataBean instanceof ListWarningDataBean)
                 || !(storeAfterClean instanceof MapWarningDataBean) ){
             throw new IllegalStateException("DataBean is error.");
@@ -150,37 +142,32 @@ public class ClassifyManager extends AbstractManager {
 
         //第一步:
         // JVM对应的AlarmparentType是: WarningEnum.JVM
-        ListWarningDataBean nextDataWrapperBean = new ListWarningDataBean();
         List<WarningBean> jvmAlarmTypeBean = new ArrayList<WarningBean>();
         List<WarningBean> pendingWarningBeanList = ((ListWarningDataBean)pendingDataBean).getDataBeans();
 
         for(WarningBean oneWarningBean : pendingWarningBeanList) {
             if(WarningEnum.JVM.getAlarmType().equals(oneWarningBean.getAlarmParentType())) {
                 jvmAlarmTypeBean.add(oneWarningBean);
-            } else {
-                nextDataWrapperBean.add(oneWarningBean);
             }
         }
 
         //第二步：以applicationKey为Key, 分类
         for(WarningBean oneWarningBean : jvmAlarmTypeBean) {
-            String applicationKey = oneWarningBean.getApplicationKey();
+            String applicationKey = WordJointUtil.warningEnumJointWord(WarningEnum.JVM, oneWarningBean.getApplicationKey());
             ((MapWarningDataBean) storeAfterClean).addWarningDataBean(applicationKey, oneWarningBean);
         }
-
-        return nextDataWrapperBean;
     }
 
     /**
      * 处理{@see org.vlis.dog.constant.WarningEnum.APPLICATION} Application类型接口
      * 第一步：根据AlarmParentType获取数据
-     * 第二部：traceId作为Key，将分布式调用所产生的信息放到一起
+     * 第二部：{@code org.vlis.dog.constant.WarningEnum.APPLICATION}和traceId作为Key，将分布式调用所产生的信息放到一起。
      * @param storeAfterClean 存放的处理后数据，需要的类型是: {@see org.vlis.dog.bean.MapWarningDataBean}
      * @param pendingDataBean 待处理数据 需要的类型是: {@see org.vlis.dog.bean.ListWarningDataBean}
      * @return 下一个类型数据处理
      */
     @Override
-    public DataWrapperBean cleanWarningBeansOfApplication(DataWrapperBean storeAfterClean, DataWrapperBean pendingDataBean) {
+    public void cleanWarningBeansOfApplication(DataWrapperBean storeAfterClean, DataWrapperBean pendingDataBean) {
         if(! canAcceptDataBeanType(pendingDataBean) || !(pendingDataBean instanceof ListWarningDataBean)
                 || !(storeAfterClean instanceof MapWarningDataBean) ) {
             throw new IllegalStateException("DataBean is error.");
@@ -188,7 +175,6 @@ public class ClassifyManager extends AbstractManager {
 
         //第一步：
         // Application对应的AlarmParentType 是: WarningEnum.APPLICATION
-        ListWarningDataBean nextDataWrapperBean = new ListWarningDataBean();
         List<WarningBean> applicationAlarmTypeBean = new ArrayList<WarningBean>();
 
         List<WarningBean> pendingWarningBeanList = ((ListWarningDataBean)pendingDataBean).getDataBeans();
@@ -196,18 +182,14 @@ public class ClassifyManager extends AbstractManager {
         for(WarningBean oneWarningBean : pendingWarningBeanList) {
             if(WarningEnum.APPLICATION.getAlarmType().equals(oneWarningBean.getAlarmParentType())) {
                 applicationAlarmTypeBean.add(oneWarningBean);
-            } else {
-                nextDataWrapperBean.add(oneWarningBean);
             }
         }
 
         // 第二步：以traceId为Key,分类
         for(WarningBean oneWarningBean : applicationAlarmTypeBean) {
-            String traceIdKey = oneWarningBean.getTraceId();
+            String traceIdKey = WordJointUtil.warningEnumJointWord(WarningEnum.APPLICATION,oneWarningBean.getTraceId());
             ((MapWarningDataBean)storeAfterClean).addWarningDataBean(traceIdKey, oneWarningBean);
         }
-
-        return nextDataWrapperBean;
     }
 
 }

@@ -75,39 +75,31 @@ public abstract class AbstractManager implements ItfManager {
      * @param pendingDataBean 待处理数据
      * @return 下一个类型数据处理
      */
-    protected DataWrapperBean cleanWarningBeansOfMachine(DataWrapperBean storeAfterClean, DataWrapperBean pendingDataBean) {
-        return storeAfterClean;
-    }
+    protected void cleanWarningBeansOfMachine(DataWrapperBean storeAfterClean, DataWrapperBean pendingDataBean) { }
 
     /**
-     * 处理{@see org.vlis.dog.constant.WarningEnum.DB} Machine机器类型接口，提供一个缺省的函数实现
+     * 处理{@see org.vlis.dog.constant.WarningEnum.DB} Db类型接口，提供一个缺省的函数实现
      * @param storeAfterClean 存放的处理后数据
      * @param pendingDataBean 待处理数据
      * @return 下一个类型数据处理
      */
-    protected DataWrapperBean cleanWarningBeansOfDb(DataWrapperBean storeAfterClean, DataWrapperBean pendingDataBean) {
-        return storeAfterClean;
-    }
+    protected void cleanWarningBeansOfDb(DataWrapperBean storeAfterClean, DataWrapperBean pendingDataBean) { }
 
     /**
-     * 处理{@see org.vlis.dog.constant.WarningEnum.JVM} Machine机器类型接口，提供一个缺省的函数实现
+     * 处理{@see org.vlis.dog.constant.WarningEnum.JVM} Jvm类型接口，提供一个缺省的函数实现
      * @param storeAfterClean 存放的处理后数据
      * @param pendingDataBean 待处理数据
      * @return 下一个类型数据处理
      */
-    protected DataWrapperBean cleanWarningBeansOfJvm(DataWrapperBean storeAfterClean, DataWrapperBean pendingDataBean) {
-        return storeAfterClean;
-    }
+    protected void cleanWarningBeansOfJvm(DataWrapperBean storeAfterClean, DataWrapperBean pendingDataBean) { }
 
     /**
-     * 处理{@see org.vlis.dog.constant.WarningEnum.APPLICATION} Machine机器类型接口，提供一个缺省的函数实现
+     * 处理{@see org.vlis.dog.constant.WarningEnum.APPLICATION} Application类型接口，提供一个缺省的函数实现
      * @param storeAfterClean 存放的处理后数据
      * @param pendingDataBean 待处理数据
      * @return 下一个类型数据处理
      */
-    protected DataWrapperBean cleanWarningBeansOfApplication(DataWrapperBean storeAfterClean, DataWrapperBean pendingDataBean) {
-        return storeAfterClean;
-    }
+    protected void cleanWarningBeansOfApplication(DataWrapperBean storeAfterClean, DataWrapperBean pendingDataBean) { }
 
     /**
      * Manager最后一个处理节点，满足下一个链路的输入要求数据

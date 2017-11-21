@@ -29,6 +29,11 @@ public enum ManagerTypeEnum {
     REASONING_MANAGER("reasoningManager", "[ 告警根源性追踪节点 ]"),
 
     /**
+     * 管理器中结合告警信息
+     */
+    COMBINE_MANAGER("combineManager", "[ 告警信息结合节点 ]"),
+
+    /**
      * 管理器中告警去重节点
      */
     DEREPLICATION_MANAGER("dereplicationManager", "[ 告警去重节点 ]");
