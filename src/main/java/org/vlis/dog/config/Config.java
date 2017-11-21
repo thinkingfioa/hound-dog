@@ -32,6 +32,8 @@ public final class Config {
 
     private static String warningSource = "elasticsearch";
 
+    private static final String WORD_JOINT_SIGN = "--thinking+fioa--";
+
     public static void configInit() throws IOException {
         LOGGER.info("Reading configuration:" + HOUND_DOG_PROPERTIES);
 
@@ -83,5 +85,9 @@ public final class Config {
 
     public static String getWarningSource() {
         return warningSource;
+    }
+
+    public static String getWordJointSign() {
+        return WORD_JOINT_SIGN;
     }
 }
