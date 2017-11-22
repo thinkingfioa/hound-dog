@@ -87,7 +87,7 @@ public class CombineManager extends AbstractManager {
 
             for(WarningBean oneWarningBean : warningBeanList) {
                 for(WarningEnum oneWarningEnum : WarningEnum.values()) {
-                    if(WarningEnum.MACHINE.equals(oneWarningEnum.getParentWarningEnum()) ){
+                    if(WarningEnum.MACHINE.equals(oneWarningEnum.getParentWarningEnum()) ) {
                         String machineSourceIpKey = WordJointUtil.joinWords(oneWarningEnum.getParentWarningEnum().getAlarmType(),
                                 oneWarningEnum.getAlarmType(), oneWarningBean.getApplicationKey());
                         if(machineAlarmTypeMap.containsKey(machineSourceIpKey)) {
