@@ -3,6 +3,7 @@ package org.vlis.dog.manager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vlis.dog.bean.DataWrapperBean;
+import org.vlis.dog.bean.ListWarningDataBean;
 import org.vlis.dog.constant.DataWrapperBeanTypeEnum;
 import org.vlis.dog.constant.ManagerTypeEnum;
 
@@ -28,8 +29,9 @@ public class CondenseManager extends AbstractManager {
      */
     @Override
     public DataWrapperBean cleanWarningBeans(DataWrapperBean warningBeans) {
-        //todo::
         LOGGER.info("{} starting...", ManagerTypeEnum.DEREPLICATION_MANAGER.getDescription());
-        return null;
+        DataWrapperBean storeAfterCleanWarningBeans = new ListWarningDataBean();
+        //todo 压缩算法
+        return storeAfterCleanWarningBeans;
     }
 }
