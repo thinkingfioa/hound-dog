@@ -14,11 +14,11 @@ import org.vlis.dog.constant.ManagerTypeEnum;
  */
 
 
-public class CondenseManager extends AbstractManager {
+public class AddupManager extends AbstractManager {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CondenseManager.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AddupManager.class);
 
-    public CondenseManager(ItfManager successorManager) {
+    public AddupManager(ItfManager successorManager) {
         super(successorManager, ManagerTypeEnum.DEREPLICATION_MANAGER, DataWrapperBeanTypeEnum.LIST_TYPE);
     }
 

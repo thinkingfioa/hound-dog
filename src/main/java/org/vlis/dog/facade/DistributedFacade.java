@@ -2,7 +2,6 @@ package org.vlis.dog.facade;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.vlis.dog.factory.DistributedDataConvertFactory;
 import org.vlis.dog.manager.*;
 
 /**
@@ -25,7 +24,7 @@ public class DistributedFacade extends AbstractCommonFacade {
         LOGGER.info(" build DistributedFacade starting....");
 
         DefaultManager endChainManager = new DefaultManager();
-        CondenseManager condenseManager = new CondenseManager(endChainManager);
+        AddupManager condenseManager = new AddupManager(endChainManager);
         ReasoningManager reasoningManager = new ReasoningManager(condenseManager);
         CombineManager combineManager = new CombineManager(reasoningManager);
         DereplicationManager dereplicationManager = new DereplicationManager(combineManager);
