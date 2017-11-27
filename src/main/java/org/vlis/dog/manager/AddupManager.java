@@ -10,7 +10,7 @@ import org.vlis.dog.constant.ManagerTypeEnum;
 /**
  * @author thinking_fioa
  * @createTime 2017/11/2
- * @description 告警压缩模块
+ * @description 告警统计模块
  */
 
 
@@ -31,7 +31,7 @@ public class AddupManager extends AbstractManager {
     public DataWrapperBean cleanWarningBeans(DataWrapperBean warningBeans) {
         LOGGER.info("{} starting...", ManagerTypeEnum.DEREPLICATION_MANAGER.getDescription());
         DataWrapperBean storeAfterCleanWarningBeans = new ListWarningDataBean();
-        //todo 压缩算法
+        //todo 告警统计模块，
         return storeAfterCleanWarningBeans;
     }
 }

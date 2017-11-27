@@ -10,6 +10,7 @@ import org.vlis.dog.constant.ManagerTypeEnum;
 import org.vlis.dog.constant.WarningEnum;
 import org.vlis.dog.util.WarningDataExtractUtil;
 
+import javax.swing.text.html.parser.Entity;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -58,6 +59,7 @@ public final class DereplicationManager extends AbstractManager {
     /**
      * 处理{@see org.vlis.dog.constant.WarningEnum.MACHINE} Machine机器类型
      * 第一步：根据AlarmParentType获取数据
+     * 第二步：挑选出最大的值
      * @param storeAfterClean 存放的处理后数据
      * @param pendingDataBean 待处理数据
      */
@@ -68,12 +70,9 @@ public final class DereplicationManager extends AbstractManager {
             throw new IllegalStateException("DataBean is error.");
         }
 
-        // 第一步：
-        // 获取分类后Application应用数据
-        MapWarningDataBean jvmAlarmTypeMap = WarningDataExtractUtil.extractWarningDataBean(pendingDataBean, WarningEnum.MACHINE);
+        // 选出最糟糕的值
+        chooseWorstWarningBean( storeAfterClean, pendingDataBean, WarningEnum.MACHINE);
 
-        // 第二步：挑选出最优的
-        //todo:: 算法提供
     }
 
     /**
@@ -90,11 +89,10 @@ public final class DereplicationManager extends AbstractManager {
         }
 
         // 第一步：
-        // 获取分类后Application应用数据
-        MapWarningDataBean jvmAlarmTypeMap = WarningDataExtractUtil.extractWarningDataBean(pendingDataBean, WarningEnum.DB);
+        // 获取分类后Db应用数据
+        MapWarningDataBean dbAlarmTypeMap = WarningDataExtractUtil.extractWarningDataBean(pendingDataBean, WarningEnum.DB);
 
-        // 第二步：利用去重复化算法: Bloom Filter
-        //todo:: 算法提供
+        // 这个留一个坑，不要问我为什么，我就是不愿意写的太好。
 
     }
 
@@ -111,13 +109,8 @@ public final class DereplicationManager extends AbstractManager {
             throw new IllegalStateException("DataBean is error.");
         }
 
-        // 第一步：
-        // 获取分类后Application应用数据
-        MapWarningDataBean jvmAlarmTypeMap = WarningDataExtractUtil.extractWarningDataBean(pendingDataBean, WarningEnum.JVM);
-
-        // 第二步：利用去重复化算法: Bloom Filter
-        //todo:: 算法提供
-
+        // 选出最糟糕的值
+        chooseWorstWarningBean( storeAfterClean, pendingDataBean, WarningEnum.JVM);
     }
 
     /**
@@ -137,11 +130,44 @@ public final class DereplicationManager extends AbstractManager {
         // 第一步：
         // 获取分类后Application应用数据
         MapWarningDataBean applicationAlarmTypeMap = WarningDataExtractUtil.extractWarningDataBean(pendingDataBean, WarningEnum.APPLICATION);
-        // 第二步:
-        // 补充DB的traceId数据相同的数据进来，同时把原来的地方移除
 
-        // 第二步：利用去重复化算法: Bloom Filter
-        //todo:: 算法提供
+        // 第二步：利用布隆过滤器，过滤已经重复的值: Bloom Filter
+        // 需要考虑的AlarmType类型有: sqlExecute、sqlConnection、exception、statusCode、call这5种类型
+        // todo:: 去重复化算法
+
+    }
+
+    /**
+     * 从值中选择最糟糕的值
+     * @param storeAfterClean 存放的处理后数据
+     * @param pendingDataBean 待处理数据
+     * @param enumType {@link WarningEnum} 告警父类型
+     */
+    private void chooseWorstWarningBean(DataWrapperBean storeAfterClean, DataWrapperBean pendingDataBean, WarningEnum enumType) {
+        // 第一步：
+        // 获取分类后Application应用数据
+        MapWarningDataBean  parentAlarmTypeMap = WarningDataExtractUtil.extractWarningDataBean(pendingDataBean, enumType);
+
+        // 第二步：找出这段时间内最大的值
+        Map<String, List<WarningBean>> warningBeansMap = parentAlarmTypeMap.getDataBeans();
+        Set<Map.Entry<String, List<WarningBean>>> warningBeanSet =  warningBeansMap.entrySet();
+        for(Map.Entry<String, List<WarningBean>> warningBeanEntry : warningBeanSet) {
+            String warningBeanKey = warningBeanEntry.getKey();
+            List<WarningBean> warningBeanList = warningBeanEntry.getValue();
+
+            //挑选最大的值
+            WarningBean bestWarningBean = null;
+            for(WarningBean oneWarningBean : warningBeanList) {
+                if(null == bestWarningBean || bestWarningBean.getFeature().compareToIgnoreCase(oneWarningBean.getFeature()) <0 ) {
+                    bestWarningBean = oneWarningBean;
+                }
+            }
+            if(null != bestWarningBean) {
+                // 保存起来
+                ((MapWarningDataBean)storeAfterClean).addWarningDataBean(warningBeanKey, bestWarningBean);
+            }
+
+        }
 
     }
 

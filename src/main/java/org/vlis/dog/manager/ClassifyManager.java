@@ -117,7 +117,8 @@ public class ClassifyManager extends AbstractManager {
 
         // 第二步：以traceId为Key,分类
         for(WarningBean oneWarningBean : dbAlarmTypeBean) {
-            String traceIdKey = WordJointUtil.warningEnumJointWord(WarningEnum.DB, oneWarningBean.getTraceId());
+            // 直接将traceID加入到Applicaiton。不要问我为啥不写DB，因为我一个人写，心情不好不想写的太好！！！！
+            String traceIdKey = WordJointUtil.warningEnumJointWord(WarningEnum.APPLICATION, oneWarningBean.getTraceId());
             ((MapWarningDataBean)storeAfterClean).addWarningDataBean(traceIdKey, oneWarningBean);
         }
 
