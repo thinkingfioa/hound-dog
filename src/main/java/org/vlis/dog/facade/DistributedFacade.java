@@ -24,16 +24,16 @@ public class DistributedFacade extends AbstractCommonFacade {
         LOGGER.info(" build DistributedFacade starting....");
 
         DefaultManager endChainManager = new DefaultManager();
-        AddupManager condenseManager = new AddupManager(endChainManager);
-        ReasoningManager reasoningManager = new ReasoningManager(condenseManager);
+        AddupManager addupManager = new AddupManager(endChainManager);
+        ReasoningManager reasoningManager = new ReasoningManager(addupManager);
         CombineManager combineManager = new CombineManager(reasoningManager);
         DereplicationManager dereplicationManager = new DereplicationManager(combineManager);
         ClassifyManager classifyManager = new ClassifyManager(dereplicationManager);
-
+        // 链路的节点: classifyManager -> dereplicationManager -> combineManager -> reasoningManager -> addupManager
         LOGGER.error("ManagerChain is : {} -> {} -> {} -> {} -> {} -> {}", classifyManager.getDescription(), dereplicationManager.getDescription(),
-                combineManager.getDescription(), reasoningManager.getDescription(), condenseManager.getDescription(), endChainManager.getDescription());
+                combineManager.getDescription(), reasoningManager.getDescription(), addupManager.getDescription(), endChainManager.getDescription());
 
         LOGGER.info(" build DistributedFacade end....");
-        return dereplicationManager;
+        return classifyManager;
     }
 }
