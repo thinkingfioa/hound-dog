@@ -1,5 +1,7 @@
 package org.vlis.dog.constant;
 
+import org.vlis.dog.bean.WarningBean;
+
 /**
  * @author thinking_fioa
  * @createTime 2017/11/2
@@ -10,17 +12,17 @@ package org.vlis.dog.constant;
 public enum WarningEnum {
 
     // alarmParentType
-    MACHINE(null, "machine"),
-    DB(null, "db"),
-    JVM(null, "jvm"),
-    APPLICATION(null, "application"),
+    MACHINE(null, "machine") ,
+    DB(null, "db") ,
+    JVM(null, "jvm") ,
+    APPLICATION(null, "application") ,
 
     // alarmType
     // machine
-    CPU_SYSTEM_USAGE(MACHINE, "cpuSystemUsage"),
-    CPU_USER_USAGE(MACHINE, "cpuUserUsage"),
-    CPU_LOAD_5(MACHINE, "cpuLoad5"),
-    MEMORY_USAGE(MACHINE, "memoryUsage"),
+    CPU_SYSTEM_USAGE(MACHINE, "cpuSystemUsage") ,
+    CPU_USER_USAGE(MACHINE, "cpuUserUsage") ,
+    CPU_LOAD_5(MACHINE, "cpuLoad5") ,
+    MEMORY_USAGE(MACHINE, "memoryUsage") ,
     SWAP_USAGE(MACHINE, "swapUsage"),
     DISK_USAGE(MACHINE, "diskUsage"),
 

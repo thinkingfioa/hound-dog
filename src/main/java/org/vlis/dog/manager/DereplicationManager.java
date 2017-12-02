@@ -5,12 +5,14 @@ import org.slf4j.LoggerFactory;
 import org.vlis.dog.bean.DataWrapperBean;
 import org.vlis.dog.bean.MapWarningDataBean;
 import org.vlis.dog.bean.WarningBean;
+import org.vlis.dog.bloomfilter.BloomFilter;
+import org.vlis.dog.bloomfilter.impl.InMemoryBloomFilter;
 import org.vlis.dog.constant.DataWrapperBeanTypeEnum;
 import org.vlis.dog.constant.ManagerTypeEnum;
 import org.vlis.dog.constant.WarningEnum;
+import org.vlis.dog.util.RedundancyAlgorithmUtil;
 import org.vlis.dog.util.WarningDataExtractUtil;
 
-import javax.swing.text.html.parser.Entity;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -25,6 +27,11 @@ import java.util.Set;
 public final class DereplicationManager extends AbstractManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DereplicationManager.class);
+
+    // 集合方法倍数
+    private static final int MULTIPLES = 10;
+    // 错误率
+    private static final double FPP = 0.01;
 
     public DereplicationManager( ItfManager successorManager) {
         super(successorManager, ManagerTypeEnum.CONDENSE_MANAGER, DataWrapperBeanTypeEnum.MAP_TYPE);
@@ -132,9 +139,22 @@ public final class DereplicationManager extends AbstractManager {
         MapWarningDataBean applicationAlarmTypeMap = WarningDataExtractUtil.extractWarningDataBean(pendingDataBean, WarningEnum.APPLICATION);
 
         // 第二步：利用布隆过滤器，过滤已经重复的值: Bloom Filter
-        // 需要考虑的AlarmType类型有: sqlExecute、sqlConnection、exception、statusCode、call这5种类型
-        // todo:: 去重复化算法
 
+
+        // 需要考虑的AlarmType类型有: sqlExecute、sqlConnection、exception、statusCode、call这5种类型
+        Map<String, List<WarningBean>> warningBeansMap = applicationAlarmTypeMap.getDataBeans();
+        Set<Map.Entry<String, List<WarningBean>>> warningBeanSet = warningBeansMap.entrySet();
+        BloomFilter<String> bloomFilter = new InMemoryBloomFilter<String>(MULTIPLES * warningBeanSet.size(), FPP);
+
+        for(Map.Entry<String, List<WarningBean>> warningBeanEntry : warningBeanSet) {
+            String traceIdKey  = warningBeanEntry.getKey();
+            List<WarningBean> warningBeanList = warningBeanEntry.getValue();
+            // 判断是否已经处理过
+            if(!RedundancyAlgorithmUtil.isRedundancyWarningList(bloomFilter, warningBeanList)) {
+                // 第一次出现
+                ((MapWarningDataBean)storeAfterClean).addWarningDataBeanList(traceIdKey, warningBeanList);
+            }
+        }
     }
 
     /**
@@ -145,7 +165,7 @@ public final class DereplicationManager extends AbstractManager {
      */
     private void chooseWorstWarningBean(DataWrapperBean storeAfterClean, DataWrapperBean pendingDataBean, WarningEnum enumType) {
         // 第一步：
-        // 获取分类后Application应用数据
+        // 获取分类后WarningEnum类型的数据
         MapWarningDataBean  parentAlarmTypeMap = WarningDataExtractUtil.extractWarningDataBean(pendingDataBean, enumType);
 
         // 第二步：找出这段时间内最大的值
