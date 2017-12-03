@@ -140,7 +140,6 @@ public final class DereplicationManager extends AbstractManager {
 
         // 第二步：利用布隆过滤器，过滤已经重复的值: Bloom Filter
 
-
         // 需要考虑的AlarmType类型有: sqlExecute、sqlConnection、exception、statusCode、call这5种类型
         Map<String, List<WarningBean>> warningBeansMap = applicationAlarmTypeMap.getDataBeans();
         Set<Map.Entry<String, List<WarningBean>>> warningBeanSet = warningBeansMap.entrySet();
