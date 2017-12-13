@@ -39,19 +39,19 @@ public final class RedundancyAlgorithmUtil {
         List<WarningBean> callWarningList = new ArrayList<WarningBean>();
 
         for(WarningBean oneWarningBean : warningBeanList) {
-            if(WarningEnum.SQL_EXECUTE.equals(oneWarningBean.getAlarmType())){
+            if(WarningEnum.SQL_EXECUTE.getAlarmType().equals(oneWarningBean.getAlarmType())){
                 sqlExecuteWarningList.add(oneWarningBean);
             }
-            if(WarningEnum.SQL_CONNECTION.equals(oneWarningBean.getAlarmType())){
+            if(WarningEnum.SQL_CONNECTION.getAlarmType().equals(oneWarningBean.getAlarmType())){
                 sqlConnectionWarningList.add(oneWarningBean);
             }
             if(WarningEnum.APPLICATION_EXCEPTION.equals(oneWarningBean.getAlarmType())){
                 exceptionWarningList.add(oneWarningBean);
             }
-            if(WarningEnum.APPLICATION_STATUS_CODE.equals(oneWarningBean.getAlarmType())){
+            if(WarningEnum.APPLICATION_STATUS_CODE.getAlarmType().equals(oneWarningBean.getAlarmType())){
                 statusCodeWarningList.add(oneWarningBean);
             }
-            if(WarningEnum.APPLICATION_CALL.equals(oneWarningBean.getAlarmType())){
+            if(WarningEnum.APPLICATION_CALL.getAlarmType().equals(oneWarningBean.getAlarmType())){
                 callWarningList.add(oneWarningBean);
             }
         }
@@ -64,11 +64,11 @@ public final class RedundancyAlgorithmUtil {
         Collections.sort(callWarningList, WarningBeanComparator.getInstance());
 
         StringBuilder keyStringBuilder = new StringBuilder();
-        genereteRedundancyKey(keyStringBuilder, sqlExecuteWarningList);
-        genereteRedundancyKey(keyStringBuilder, sqlConnectionWarningList);
-        genereteRedundancyKey(keyStringBuilder, exceptionWarningList);
-        genereteRedundancyKey(keyStringBuilder, statusCodeWarningList);
-        genereteRedundancyKey(keyStringBuilder, callWarningList);
+        genereteRedundancyKey(WarningEnum.SQL_EXECUTE.getAlarmType(), keyStringBuilder, sqlExecuteWarningList);
+        genereteRedundancyKey(WarningEnum.SQL_CONNECTION.getAlarmType(), keyStringBuilder, sqlConnectionWarningList);
+        genereteRedundancyKey(WarningEnum.APPLICATION_EXCEPTION.getAlarmType(), keyStringBuilder, exceptionWarningList);
+        genereteRedundancyKey(WarningEnum.APPLICATION_STATUS_CODE.getAlarmType(), keyStringBuilder, statusCodeWarningList);
+        genereteRedundancyKey(WarningEnum.APPLICATION_CALL.getAlarmType(), keyStringBuilder, callWarningList);
 
         String specificKey = keyStringBuilder.toString();
 
@@ -96,9 +96,9 @@ public final class RedundancyAlgorithmUtil {
      * @param warningBeanList  告警信息集合
      * @return {@code String}
      */
-    public static void genereteRedundancyKey(StringBuilder sb, List<WarningBean> warningBeanList) {
+    public static void genereteRedundancyKey(String warningBeanType, StringBuilder sb, List<WarningBean> warningBeanList) {
         if(null == sb || null == warningBeanList || warningBeanList.isEmpty()) {
-            throw new NullPointerException("parameter is null.");
+            LOGGER.error("waringBeanList is null or Empty. [warningBeanType]:{}", warningBeanType);
         }
 
         for(WarningBean oneWarningBean : warningBeanList) {
@@ -118,28 +118,28 @@ public final class RedundancyAlgorithmUtil {
      * @param warningBean  告警信息集合
      */
     private static void geneteRedundancyKey(StringBuilder sb, WarningBean warningBean) {
-        if(WarningEnum.SQL_EXECUTE.equals(warningBean.getAlarmType())){
+        if(WarningEnum.SQL_EXECUTE.getAlarmType().equals(warningBean.getAlarmType())){
             sb.append(warningBean.getApplicationKey())
                     .append(warningBean.getDestinationIp())
                     .append(warningBean.getDestinationPort())
                     .append(warningBean.getFeature());
         }
-        if(WarningEnum.SQL_CONNECTION.equals(warningBean.getAlarmType())){
+        if(WarningEnum.SQL_CONNECTION.getAlarmType().equals(warningBean.getAlarmType())){
             sb.append(warningBean.getApplicationKey())
                     .append(warningBean.getUrl())
                     .append(warningBean.getFeature());
         }
-        if(WarningEnum.APPLICATION_EXCEPTION.equals(warningBean.getAlarmType())){
+        if(WarningEnum.APPLICATION_EXCEPTION.getAlarmType().equals(warningBean.getAlarmType())){
             sb.append(warningBean.getApplicationKey())
                     .append(warningBean.getUrl())
                     .append(warningBean.getFeature());
         }
-        if(WarningEnum.APPLICATION_STATUS_CODE.equals(warningBean.getAlarmType())){
+        if(WarningEnum.APPLICATION_STATUS_CODE.getAlarmType().equals(warningBean.getAlarmType())){
             sb.append(warningBean.getApplicationKey())
                     .append(warningBean.getUrl())
                     .append(warningBean.getFeature());
         }
-        if(WarningEnum.APPLICATION_CALL.equals(warningBean.getAlarmType())){
+        if(WarningEnum.APPLICATION_CALL.getAlarmType().equals(warningBean.getAlarmType())){
             sb.append(warningBean.getApplicationKey())
                     .append(warningBean.getDestinationIp())
                     .append(warningBean.getDestinationPort())

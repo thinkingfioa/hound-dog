@@ -48,7 +48,7 @@ public abstract class AbstractManager implements ItfManager {
     @Override
     public DataWrapperBean dealWithWarningBeans(DataWrapperBean warningBeans) {
 
-        if(! warningBeans.getDataBeanType().equals(pendingDataBeanType)) {
+        if(! ManagerTypeEnum.DEFAULT_MANAGER.equals(managerTypeEnum) && !warningBeans.getDataBeanType().equals(pendingDataBeanType)) {
             throw new IllegalStateException("DataType error.");
         }
 
