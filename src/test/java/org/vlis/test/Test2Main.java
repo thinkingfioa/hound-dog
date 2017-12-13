@@ -20,7 +20,8 @@ import java.util.List;
  * @createTime 2017/12/13
  * @description 论文中实验二的测试Demo
  * 如果想测试论文中实验二，需要做以下几点:
- * 1.
+ * 1. DistributedFacade.java中，修改最后一个链路节点
+ * 2. DereplicationManager.java 部分执行逻辑不用执行
  */
 
 
@@ -33,7 +34,7 @@ public class Test2Main {
 
         String projectKey = "192.168.2.114";
         String from  = "2017-12-13 12:26:56";
-        String to = "2017-12-13 20:28:56";
+        String to = "2017-12-14 20:28:56";
 
         try {
             Config.configInit();

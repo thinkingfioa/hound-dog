@@ -72,7 +72,9 @@ public final class RedundancyAlgorithmUtil {
 
         String specificKey = keyStringBuilder.toString();
 
+
         if( !filter.contains(specificKey)) {
+            System.out.println("specificKey: "+ specificKey);
             filter.add(specificKey);
             return false;
         }

@@ -54,10 +54,10 @@ public final class DereplicationManager extends AbstractManager {
         cleanWarningBeansOfJvm(storeAfterCleanWarningBeans, warningBeans);
 
         // DB 去重
-        cleanWarningBeansOfDb(storeAfterCleanWarningBeans, warningBeans);
+        //cleanWarningBeansOfDb(storeAfterCleanWarningBeans, warningBeans);
 
         // Machine 去重
-        cleanWarningBeansOfMachine(storeAfterCleanWarningBeans, warningBeans);
+        //cleanWarningBeansOfMachine(storeAfterCleanWarningBeans, warningBeans);
 
         // 处理器最后一个处理节点
         return cleanWarningBeansOfEnd(storeAfterCleanWarningBeans, warningBeans);
@@ -138,6 +138,10 @@ public final class DereplicationManager extends AbstractManager {
         // 获取分类后Application应用数据
         MapWarningDataBean applicationAlarmTypeMap = WarningDataExtractUtil.extractWarningDataBean(pendingDataBean, WarningEnum.APPLICATION);
 
+        System.out.println("*************************************************");
+        System.out.println(applicationAlarmTypeMap.getDataBeans());
+        System.out.println("*************************************************");
+        System.out.println("before-Doc size: "+ applicationAlarmTypeMap.getDataBeans().size());
         // 第二步：利用布隆过滤器，过滤已经重复的值: Bloom Filter
 
         // 需要考虑的AlarmType类型有: sqlExecute、sqlConnection、exception、statusCode、call这5种类型
@@ -154,6 +158,8 @@ public final class DereplicationManager extends AbstractManager {
                 ((MapWarningDataBean)storeAfterClean).addWarningDataBeanList(traceIdKey, warningBeanList);
             }
         }
+
+        System.out.println("after-Doc size: "+ ((MapWarningDataBean)storeAfterClean).getDataBeans().size());
     }
 
     /**
