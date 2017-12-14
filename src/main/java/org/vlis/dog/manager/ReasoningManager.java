@@ -12,10 +12,7 @@ import org.vlis.dog.constant.WarningEnum;
 import org.vlis.dog.util.WarningDataExtractUtil;
 
 import javax.management.monitor.StringMonitorMBean;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author thinking_fioa
@@ -172,6 +169,60 @@ public class ReasoningManager extends AbstractManager {
         for(Map.Entry<String, List<WarningBean>> applicationWarningBeanEntry : applicationWarningBeanSet) {
             List<WarningBean> warningBeanList = applicationWarningBeanEntry.getValue();
             //todo:: 提供推理函数， 推理函数第一，看看是不是错误问题。第二看看是不是延时高。分别定位问题
+
+        }
+    }
+
+    /**
+     * 推理分布式跟踪告警数据
+     * 1. 先根据父类型，筛选出{@see WarningEnum.MACHINE}和{@see WarningEnum.JVM}告警数据
+     * 2. 对于数据进行分布式跟踪的告警数据，进行推理
+     * @param storeAfterClean 存放的处理后数据
+     * @param warningBeanList 待处理数据
+     */
+    private void reasoningOfApplication(DataWrapperBean storeAfterClean, List<WarningBean> warningBeanList) {
+        if(null == storeAfterClean || null == warningBeanList || warningBeanList.isEmpty()) {
+            throw new NullPointerException("parameter is null.");
+        }
+
+        List<WarningBean> machineOrJvmList = new ArrayList<WarningBean>();
+        List<WarningBean> applicationList = new ArrayList<WarningBean>();
+
+        //key : parentspanId, value is List
+        Map<String, List<WarningBean> > applicationMap = new HashMap<String, List<WarningBean>>();
+
+        WarningBean startServiceWarningBean = null;
+
+        for(WarningBean warningBean : warningBeanList) {
+            if(WarningEnum.MACHINE.getParentWarningEnum().getAlarmType().equals(warningBean.getAlarmParentType())) {
+                machineOrJvmList.add(warningBean);
+            } else if(WarningEnum.JVM.getParentWarningEnum().getAlarmType().equals(warningBean.getAlarmParentType())) {
+                machineOrJvmList.add(warningBean);
+            } else {
+                String parentSpanIdKey = warningBean.getParentSpanId();
+                if(null == parentSpanIdKey || "null".equals(parentSpanIdKey) ) {
+                    throw new NullPointerException("happen error.");
+                }
+                if(applicationMap.containsKey(parentSpanIdKey)){
+                    applicationMap.get(parentSpanIdKey).add(warningBean);
+                }else {
+                    List<WarningBean> subWarningBeanList = new ArrayList<WarningBean>();
+                    subWarningBeanList.add(warningBean);
+                    applicationMap.put(parentSpanIdKey, subWarningBeanList);
+                }
+                if("-1".equals(parentSpanIdKey)) {
+                    startServiceWarningBean = warningBean;
+                }
+            }
+        }
+
+        if(null == startServiceWarningBean) {
+            throw new NullPointerException("paremeter is null.");
+        }
+
+        //todo:: 遍历。。。。。
+        while(null != startServiceWarningBean) {
+
         }
 
     }
