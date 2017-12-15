@@ -31,7 +31,7 @@ public class AddupManager extends AbstractManager {
     public DataWrapperBean cleanWarningBeans(DataWrapperBean warningBeans) {
         LOGGER.info("{} starting...", ManagerTypeEnum.DEREPLICATION_MANAGER.getDescription());
         DataWrapperBean storeAfterCleanWarningBeans = new ListWarningDataBean();
-        //todo 告警统计模块，
+
         return storeAfterCleanWarningBeans;
     }
 }

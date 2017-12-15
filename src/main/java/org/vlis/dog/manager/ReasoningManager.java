@@ -2,10 +2,7 @@ package org.vlis.dog.manager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.vlis.dog.bean.DataWrapperBean;
-import org.vlis.dog.bean.ListWarningDataBean;
-import org.vlis.dog.bean.MapWarningDataBean;
-import org.vlis.dog.bean.WarningBean;
+import org.vlis.dog.bean.*;
 import org.vlis.dog.constant.DataWrapperBeanTypeEnum;
 import org.vlis.dog.constant.ManagerTypeEnum;
 import org.vlis.dog.constant.WarningEnum;
@@ -24,6 +21,7 @@ import java.util.*;
 public class ReasoningManager extends AbstractManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReasoningManager.class);
+    private static final String CALL_STATUS_CODE_SUCCESS = "200";
 
     public ReasoningManager( ItfManager successorManager) {
         super(successorManager, ManagerTypeEnum.REASONING_MANAGER, DataWrapperBeanTypeEnum.MAP_TYPE);
@@ -168,8 +166,7 @@ public class ReasoningManager extends AbstractManager {
         Set<Map.Entry<String, List<WarningBean>>> applicationWarningBeanSet = applicationWarningBeanMap.entrySet();
         for(Map.Entry<String, List<WarningBean>> applicationWarningBeanEntry : applicationWarningBeanSet) {
             List<WarningBean> warningBeanList = applicationWarningBeanEntry.getValue();
-            //todo:: 提供推理函数， 推理函数第一，看看是不是错误问题。第二看看是不是延时高。分别定位问题
-
+            reasoningOfApplication(storeAfterClean, warningBeanList);
         }
     }
 
@@ -191,7 +188,8 @@ public class ReasoningManager extends AbstractManager {
         //key : parentspanId, value is List
         Map<String, List<WarningBean> > applicationMap = new HashMap<String, List<WarningBean>>();
 
-        WarningBean startServiceWarningBean = null;
+        String statusCode = null;
+        long interval = Long.MIN_VALUE;
 
         for(WarningBean warningBean : warningBeanList) {
             if(WarningEnum.MACHINE.getParentWarningEnum().getAlarmType().equals(warningBean.getAlarmParentType())) {
@@ -210,21 +208,120 @@ public class ReasoningManager extends AbstractManager {
                     subWarningBeanList.add(warningBean);
                     applicationMap.put(parentSpanIdKey, subWarningBeanList);
                 }
-                if("-1".equals(parentSpanIdKey)) {
-                    startServiceWarningBean = warningBean;
+                if("-1".equals(parentSpanIdKey)
+                        && WarningEnum.APPLICATION_STATUS_CODE.getAlarmType().equals(warningBean.getAlarmType())) {
+                    statusCode = warningBean.getFeature();
+                    interval = Long.parseLong(warningBean.getExecuteTime());
                 }
             }
         }
 
-        if(null == startServiceWarningBean) {
-            throw new NullPointerException("paremeter is null.");
+        if(null == statusCode || Long.MIN_VALUE == interval) {
+            throw new IllegalStateException("TraceWarningBean data error.");
         }
 
-        //todo:: 遍历。。。。。
-        while(null != startServiceWarningBean) {
+        WarningBeanWrapper warningBeanWrapper = new WarningBeanWrapper();
 
+        if(CALL_STATUS_CODE_SUCCESS.equals(statusCode) ){
+            // 延时高的告警数据诊断
+            reasoningOfDelayed(warningBeanWrapper,interval , applicationMap);
+        } else {
+            // 错误的告警数据诊断
+            reasoningOfError(warningBeanWrapper, statusCode, applicationMap);
         }
 
+        // 告警数据保存起来
+        ((ListWarningDataBean)storeAfterClean).add(warningBeanWrapper);
+
+    }
+
+    /**
+     * 如果是链路上发生错误，则找到错误点
+     * @param warningBeanWrapper  存放的处理后数据
+     * @param statusCode 调用状态码
+     * @param applicationMap 查找数据集合
+     */
+    private void reasoningOfError(WarningBeanWrapper warningBeanWrapper, String statusCode, Map<String, List<WarningBean> > applicationMap) {
+        String nextSpanId = "-1";
+        while(true) {
+            if("200".equals(statusCode) ){
+                break;
+            }
+
+            if(!applicationMap.containsKey(nextSpanId)) {
+                break;
+            }
+
+            List<WarningBean> warningBeanList = applicationMap.get(nextSpanId);
+            for(WarningBean warningBean : warningBeanList) {
+                if(WarningEnum.APPLICATION_STATUS_CODE.getAlarmType().equals(warningBean.getAlarmType()) ) {
+                    statusCode = warningBean.getFeature();
+                    nextSpanId = warningBean.getSpanId();
+                } else if(WarningEnum.APPLICATION_EXCEPTION.getAlarmType().equals(warningBean.getAlarmType()) ) {
+                    warningBeanWrapper.setTraceWarningBean(warningBean);
+                } else if(WarningEnum.APPLICATION_CALL.getAlarmType().equals(warningBean.getAlarmType()) ) {
+                    warningBeanWrapper.setTraceWarningBean(warningBean);
+                }
+            }
+        }
+    }
+
+    /**
+     * 如果是链路上发生高延时，凡是超过总耗时的1/3的告警数据，都作为诊断出的告警数据。
+     * @param warningBeanWrapper 存放的处理后数据
+     * @param interval 调用延时, unit : ms
+     * @param applicationMap 查找数据集合
+     */
+    private void reasoningOfDelayed(WarningBeanWrapper warningBeanWrapper, long interval, Map<String, List<WarningBean> > applicationMap) {
+        String nextSpanId = "-1";
+        long nextInterval = interval;
+        WarningBean lastMaxIntrvalWarningBean = null;
+        while(true) {
+
+            if(interval / 3 > nextInterval ){
+                if(null != lastMaxIntrvalWarningBean) {
+                    warningBeanWrapper.setTraceWarningBean(lastMaxIntrvalWarningBean);
+                }
+                break;
+            }
+
+            if(!applicationMap.containsKey(nextSpanId)) {
+                break;
+            }
+            nextInterval = 0;
+            nextSpanId = "unknownSpanId";
+
+            List<WarningBean> warningBeanList = applicationMap.get(nextSpanId);
+            for(WarningBean warningBean : warningBeanList) {
+                if(WarningEnum.APPLICATION_STATUS_CODE.getAlarmType().equals(warningBean.getAlarmType()) ) {
+                    // 这里可能比较难理解，但是肯定没有问题。目的是找到：调用链下一个最大服务节点，如果没有则选择当前的告警数据。
+                    long executeTime = Long.parseLong(warningBean.getExecuteTime());
+                    if(executeTime > nextInterval) {
+                        if(executeTime > nextInterval && executeTime > interval / 3) {
+                            nextSpanId = warningBean.getSpanId();
+                        }
+                        nextInterval = executeTime;
+                        lastMaxIntrvalWarningBean = warningBean;
+                    }
+                } else if(WarningEnum.SQL_CONNECTION.getAlarmType().equals(warningBean.getAlarmType()) ) {
+                    long executeTime = Long.parseLong(warningBean.getExecuteTime());
+                    if(executeTime > interval / 3) {
+                        warningBeanWrapper.setTraceWarningBean(warningBean);
+                    }
+
+                } else if(WarningEnum.SQL_CONNECTION.getAlarmType().equals(warningBean.getAlarmType()) ) {
+                    long executeTime = Long.parseLong(warningBean.getExecuteTime());
+                    if(executeTime > interval / 3) {
+                        warningBeanWrapper.setTraceWarningBean(warningBean);
+                    }
+                } else if(WarningEnum.APPLICATION_CALL.getAlarmType().equals(warningBean.getAlarmType()) ) {
+                    long executeTime = Long.parseLong(warningBean.getExecuteTime());
+                    if(executeTime > interval / 3) {
+                        warningBeanWrapper.setTraceWarningBean(warningBean);
+                    }
+                }
+            }
+        }
     }
 
 }

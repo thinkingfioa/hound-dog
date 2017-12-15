@@ -1,5 +1,6 @@
 package org.vlis.dog.bean;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -13,20 +14,24 @@ import java.util.List;
 
 public class WarningBeanWrapper extends WarningBean {
 
-    private WarningBean traceWarningBean;
-    List<WarningBean> machineOrJvmList;
+    private List<WarningBean> traceWarningBeanList;
+    private List<WarningBean> machineOrJvmList;
 
-    public WarningBeanWrapper(WarningBean traceWarningBean, List<WarningBean> machineOrJvmList) {
-        this.traceWarningBean = traceWarningBean;
-        this.machineOrJvmList = machineOrJvmList;
+    public WarningBeanWrapper() {
+        this.traceWarningBeanList = new ArrayList<WarningBean>();
+        this.machineOrJvmList = new ArrayList<WarningBean>();
     }
 
-    public WarningBean getTraceWarningBean() {
-        return traceWarningBean;
+    public List<WarningBean> getTraceWarningBeanList() {
+        return traceWarningBeanList;
     }
 
-    public void setTraceWarningBean(WarningBean traceWarningBean) {
-        this.traceWarningBean = traceWarningBean;
+    public void setTraceWarningBeanList(List<WarningBean> traceWarningBeanList) {
+        this.traceWarningBeanList = traceWarningBeanList;
+    }
+
+    public void setTraceWarningBean(WarningBean warningBean) {
+        this.traceWarningBeanList.add(warningBean);
     }
 
     public List<WarningBean> getMachineOrJvmList() {
@@ -35,5 +40,9 @@ public class WarningBeanWrapper extends WarningBean {
 
     public void setMachineOrJvmList(List<WarningBean> machineOrJvmList) {
         this.machineOrJvmList = machineOrJvmList;
+    }
+
+    public void setMachineOrJvm(WarningBean warningBean) {
+        this.machineOrJvmList.add(warningBean);
     }
 }
