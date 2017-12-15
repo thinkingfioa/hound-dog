@@ -28,7 +28,7 @@ public final class RedundancyAlgorithmUtil {
      * @return true 则表示重复，false 则表示非重复。
      */
     @Deprecated
-    public static  boolean isRedundancyWarningListBackup(BloomFilter<String> filter, List<WarningBean> warningBeanList) {
+    public static  boolean isRedundancyWarningList(BloomFilter<String> filter, List<WarningBean> warningBeanList) {
         if(null == filter || null == warningBeanList || warningBeanList.isEmpty()) {
             return false;
         }
@@ -87,7 +87,7 @@ public final class RedundancyAlgorithmUtil {
      * @param warningBean 单个告警
      * @return true表示冗余，false 则不冗余。
      */
-    public static boolean isRedundancyWarning(BloomFilter<String> filter, WarningBean warningBean) {
+    public static boolean isRedundancyWarningOfAddupManager(BloomFilter<String> filter, WarningBean warningBean) {
         StringBuilder keyStringBuilder = new StringBuilder();
         geneteRedundancyKey(keyStringBuilder, warningBean);
         String specificKey = keyStringBuilder.toString();
@@ -107,7 +107,7 @@ public final class RedundancyAlgorithmUtil {
      * @param warningBeanList 告警集合
      * @return true 则表示重复，false 则表示非重复。
      */
-    public static boolean isRedundancyWarningList(BloomFilter<String> filter, List<WarningBean> warningBeanList) {
+    public static boolean isRedundancyWarningListOfAddupManager(BloomFilter<String> filter, List<WarningBean> warningBeanList) {
         if(null == filter || null == warningBeanList || warningBeanList.isEmpty()) {
             return false;
         }

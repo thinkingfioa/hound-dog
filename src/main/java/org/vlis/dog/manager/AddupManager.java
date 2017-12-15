@@ -2,10 +2,15 @@ package org.vlis.dog.manager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.vlis.dog.bean.DataWrapperBean;
-import org.vlis.dog.bean.ListWarningDataBean;
+import org.vlis.dog.bean.*;
+import org.vlis.dog.bloomfilter.BloomFilter;
+import org.vlis.dog.bloomfilter.impl.InMemoryBloomFilter;
 import org.vlis.dog.constant.DataWrapperBeanTypeEnum;
 import org.vlis.dog.constant.ManagerTypeEnum;
+import org.vlis.dog.util.RedundancyAlgorithmUtil;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author thinking_fioa
@@ -17,6 +22,11 @@ import org.vlis.dog.constant.ManagerTypeEnum;
 public class AddupManager extends AbstractManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AddupManager.class);
+
+    // 集合方法倍数
+    private static final int MULTIPLES = 10;
+    // 错误率
+    private static final double FPP = 0.01;
 
     public AddupManager(ItfManager successorManager) {
         super(successorManager, ManagerTypeEnum.DEREPLICATION_MANAGER, DataWrapperBeanTypeEnum.LIST_TYPE);
@@ -32,6 +42,26 @@ public class AddupManager extends AbstractManager {
         LOGGER.info("{} starting...", ManagerTypeEnum.DEREPLICATION_MANAGER.getDescription());
         DataWrapperBean storeAfterCleanWarningBeans = new ListWarningDataBean();
 
+        List<WarningBean> warningBeanList = ((ListWarningDataBean)warningBeans).getDataBeans();
+        // 多线程下，这个bloomFilter是要注意的。warningBeans必须所有短时间片做完，保存最大集合
+        BloomFilter<String> bloomFilter = new InMemoryBloomFilter<String>(MULTIPLES * warningBeanList.size(), FPP);
+        for(WarningBean oneWarningBean : warningBeanList) {
+            if(oneWarningBean instanceof WarningBeanWrapper) {
+                List<WarningBean> warningBeanWrapperList = new ArrayList<WarningBean>();
+                warningBeanWrapperList.addAll( ((WarningBeanWrapper)oneWarningBean).getMachineOrJvmList() );
+                warningBeanWrapperList.addAll( ((WarningBeanWrapper)oneWarningBean).getTraceWarningBeanList() );
+
+                if(!RedundancyAlgorithmUtil.isRedundancyWarningListOfAddupManager(bloomFilter, warningBeanWrapperList)) {
+                    ((ListWarningDataBean)storeAfterCleanWarningBeans).add(oneWarningBean);
+                }
+            } else {
+                if(!RedundancyAlgorithmUtil.isRedundancyWarningOfAddupManager(bloomFilter, oneWarningBean)) {
+                    ((ListWarningDataBean)storeAfterCleanWarningBeans).add(oneWarningBean);
+                }
+            }
+        }
+
         return storeAfterCleanWarningBeans;
     }
+
 }
