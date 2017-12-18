@@ -2,8 +2,10 @@ package org.vlis.dog.start;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import org.elasticsearch.action.search.ClearScrollRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
@@ -49,13 +51,82 @@ public final class WarningDataFetch {
         }
 
         if( ELASTICSEARCH_SOURCE.equals(Config.getWarningSource()) ) {
-            return fetchAllWarningBeansFromEs(projectKey, from, to);
+            return fetchAllWarningBeansFromEsScroll(projectKey, from, to);
         }else if( DISK_SOURCE.equals(Config.getWarningSource()) ) {
             return fetchAllWarningBeansFromDisk();
         }else {
            return new ArrayList<WarningBean>();
         }
     }
+
+    /**
+     * 获取时间段[from, to]的告警数据，从Es中获取.超过10000的数字
+     * @param projectKey projectKey，项目Key
+     * @param from 起始时间
+     * @param to 结束时间
+     * @return
+     */
+    public static List<WarningBean> fetchAllWarningBeansFromEsScroll(String projectKey, String from, String to) {
+        if(null == projectKey || null == from || null == to || from.compareToIgnoreCase(to) > 0) {
+            throw new IllegalArgumentException("parameters is wrong.");
+        }
+
+
+        String indexName = EsSearchHelper.getIndexName(projectKey, INDEX_TYPE);
+        List<WarningBean> warningBeanList = new ArrayList<WarningBean>();
+
+        try {
+
+            QueryBuilder queryBuilder = QueryBuilders.boolQuery().filter(
+                    QueryBuilders.rangeQuery("alarmTime").from(from).to(to));
+
+            SearchResponse searchResponse = client.prepareSearch(indexName).setTypes(INDEX_TYPE)
+                    .setQuery(queryBuilder).setScroll(new TimeValue(60000))
+                    .setSize(10000).execute().actionGet();
+
+            System.out.println("address: " + WARNING_DATA_FILE_ADDRESS);
+
+            ClearScrollRequestBuilder clearRequest = client.prepareClearScroll();
+
+            while(true) {
+
+                for(SearchHit searchHit : searchResponse.getHits()) {
+                    Map<String, Object> map = searchHit.getSource();
+                    WarningBean warningBean = WarningBean.valueOfMap(map);
+
+                    warningBeanList.add(warningBean);
+                }
+
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException exception) {
+                    LOGGER.error(exception.getMessage(), exception);
+                }
+
+                searchResponse = client.prepareSearchScroll(searchResponse.getScrollId()).setScroll(new TimeValue(60000))
+                        .execute().actionGet();
+
+                // Break condition: No hits are returned
+                if (searchResponse.getHits().getHits().length == 0) {
+                    break;
+                }
+            }
+
+            // 清缓存
+            clearRequest.addScrollId(searchResponse.getScrollId()).execute().actionGet().isSucceeded();
+            clearRequest.execute().actionGet();
+
+            FileReadWriteUtil.getInstance().writeByBufferedWriter(JSON.toJSONString(warningBeanList), WARNING_DATA_FILE_ADDRESS);
+
+            System.out.println("warningBeanList [size]" + warningBeanList.size());
+
+        } catch (Exception ex) {
+            LOGGER.error("fetch data error. [projectKey]{}, [from]{}, [to]{}", projectKey, from, to);
+        }
+
+        return warningBeanList;
+    }
+
 
     /**
      * 获取时间段[from, to]的告警数据，从Es中获取

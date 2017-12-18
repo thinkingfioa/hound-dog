@@ -253,9 +253,15 @@ public final class RedundancyAlgorithmUtil {
                     .append(warningBean.getFeature());
         }
         if(WarningEnum.APPLICATION_STATUS_CODE.getAlarmType().equals(warningBean.getAlarmType())){
-            sb.append(warningBean.getApplicationKey())
-                    .append(warningBean.getUrl())
-                    .append(warningBean.getFeature());
+            if(-1 != warningBean.getUrl().indexOf(";")) {
+                sb.append(warningBean.getApplicationKey())
+                        .append(warningBean.getUrl().substring(0, warningBean.getUrl().indexOf(";")))
+                        .append(warningBean.getFeature());
+            } else {
+                sb.append(warningBean.getApplicationKey()).append("-")
+                        .append(warningBean.getUrl()).append("-")
+                        .append(warningBean.getFeature());
+            }
         }
         if(WarningEnum.APPLICATION_CALL.getAlarmType().equals(warningBean.getAlarmType())){
             sb.append(warningBean.getApplicationKey())
