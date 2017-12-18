@@ -153,7 +153,7 @@ public final class DereplicationManager extends AbstractManager {
             String traceIdKey  = warningBeanEntry.getKey();
             List<WarningBean> warningBeanList = warningBeanEntry.getValue();
             // 判断是否已经处理过
-            if(!RedundancyAlgorithmUtil.isRedundancyWarningList(bloomFilter, warningBeanList)) {
+            if(!RedundancyAlgorithmUtil.isRedundancyWarningList(bloomFilter, traceIdKey, warningBeanList)) {
                 // 第一次出现
                 ((MapWarningDataBean)storeAfterClean).addWarningDataBeanList(traceIdKey, warningBeanList);
             }

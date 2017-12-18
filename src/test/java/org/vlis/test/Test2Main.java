@@ -33,14 +33,14 @@ public class Test2Main {
         long startTime = System.currentTimeMillis();
 
         String projectKey = "192.168.2.114";
-        String from  = "2017-12-13 12:26:56";
-        String to = "2017-12-14 20:28:56";
+        String from  = "2017-12-18 09:26:56";
+        String to = "2017-12-19 20:28:56";
 
         try {
             Config.configInit();
             LOGGER.info(" Hound-Dog start....");
             ItfFacade rootCauseAnalysisFacade = getRootCauseAnalysisFacade();
-            List<WarningBean> warningBeanList = WarningDataFetch.fetchAllWarningBeans(projectKey, from, to);
+            List<WarningBean> warningBeanList = WarningDataFetch.fetchAllWarningBeansFromEsScroll(projectKey, from, to);
             long beforeWarningBeansSize = warningBeanList.size();
             DataWrapperBean rootWarningBeanList = rootCauseAnalysisFacade.startRootCauseAnalysis(ListWarningDataBean.valueOf(warningBeanList));
             long afterWarningBeansSize = rootWarningBeanList.size();

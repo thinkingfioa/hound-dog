@@ -26,7 +26,7 @@ public final class RedundancyAlgorithmUtil {
      * @param warningBeanList 告警集合
      * @return true 则表示重复，false 则表示非重复。
      */
-    public static  boolean isRedundancyWarningList(BloomFilter<String> filter, List<WarningBean> warningBeanList) {
+    public static  boolean isRedundancyWarningList(BloomFilter<String> filter, String traceId,  List<WarningBean> warningBeanList) {
         if(null == filter || null == warningBeanList || warningBeanList.isEmpty()) {
             return false;
         }
@@ -45,7 +45,7 @@ public final class RedundancyAlgorithmUtil {
             if(WarningEnum.SQL_CONNECTION.getAlarmType().equals(oneWarningBean.getAlarmType())){
                 sqlConnectionWarningList.add(oneWarningBean);
             }
-            if(WarningEnum.APPLICATION_EXCEPTION.equals(oneWarningBean.getAlarmType())){
+            if(WarningEnum.APPLICATION_EXCEPTION.getAlarmType().equals(oneWarningBean.getAlarmType())){
                 exceptionWarningList.add(oneWarningBean);
             }
             if(WarningEnum.APPLICATION_STATUS_CODE.getAlarmType().equals(oneWarningBean.getAlarmType())){
@@ -121,31 +121,37 @@ public final class RedundancyAlgorithmUtil {
      */
     private static void geneteRedundancyKey(StringBuilder sb, WarningBean warningBean) {
         if(WarningEnum.SQL_EXECUTE.getAlarmType().equals(warningBean.getAlarmType())){
-            sb.append(warningBean.getApplicationKey())
-                    .append(warningBean.getDestinationIp())
-                    .append(warningBean.getDestinationPort())
+            sb.append(warningBean.getApplicationKey()).append("-")
+                    .append(warningBean.getDestinationIp()).append("-")
+                    .append(warningBean.getDestinationPort()).append("-")
                     .append(warningBean.getFeature());
         }
         if(WarningEnum.SQL_CONNECTION.getAlarmType().equals(warningBean.getAlarmType())){
-            sb.append(warningBean.getApplicationKey())
-                    .append(warningBean.getUrl())
+            sb.append(warningBean.getApplicationKey()).append("-")
+                    .append(warningBean.getUrl()).append("-")
                     .append(warningBean.getFeature());
         }
-        if(WarningEnum.APPLICATION_EXCEPTION.getAlarmType().equals(warningBean.getAlarmType())){
-            sb.append(warningBean.getApplicationKey())
-                    .append(warningBean.getUrl())
-                    .append(warningBean.getFeature());
-        }
+//        if(WarningEnum.APPLICATION_EXCEPTION.getAlarmType().equals(warningBean.getAlarmType())){
+//            sb.append(warningBean.getApplicationKey())
+//                    .append(warningBean.getUrl())
+//                    .append(warningBean.getFeature());
+//        }
         if(WarningEnum.APPLICATION_STATUS_CODE.getAlarmType().equals(warningBean.getAlarmType())){
-            sb.append(warningBean.getApplicationKey())
-                    .append(warningBean.getUrl())
-                    .append(warningBean.getFeature());
+            if(warningBean.getUrl().indexOf(";") != -1) {
+                sb.append(warningBean.getApplicationKey()).append("-")
+                        .append(warningBean.getUrl().substring(0, warningBean.getUrl().indexOf(";"))).append("-")
+                        .append(warningBean.getFeature());
+            } else {
+                sb.append(warningBean.getApplicationKey()).append("-")
+                        .append(warningBean.getUrl()).append("-")
+                        .append(warningBean.getFeature());
+            }
         }
         if(WarningEnum.APPLICATION_CALL.getAlarmType().equals(warningBean.getAlarmType())){
-            sb.append(warningBean.getApplicationKey())
-                    .append(warningBean.getDestinationIp())
-                    .append(warningBean.getDestinationPort())
-                    .append(warningBean.getUrl())
+            sb.append(warningBean.getApplicationKey()).append("-")
+                    .append(warningBean.getDestinationIp()).append("-")
+                    .append(warningBean.getDestinationPort()).append("-")
+                    .append(warningBean.getUrl()).append("-")
                     .append(warningBean.getFeature());
         }
     }
