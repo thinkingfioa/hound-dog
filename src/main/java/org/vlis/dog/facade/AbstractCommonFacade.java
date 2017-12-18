@@ -3,6 +3,7 @@ package org.vlis.dog.facade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vlis.dog.bean.DataWrapperBean;
+import org.vlis.dog.manager.AddupManager;
 import org.vlis.dog.manager.ItfManager;
 
 /**
@@ -33,7 +34,8 @@ public abstract class AbstractCommonFacade implements ItfManagerChainFacade, Itf
             localRootManager = buildManagerChain();
         }
 
-        return localRootManager.dealWithWarningBeans(warningBeans);
+        DataWrapperBean dataWrapperBean = localRootManager.dealWithWarningBeans(warningBeans);
+        return AddupManager.getAddupResult(dataWrapperBean);
     }
 
     /**
